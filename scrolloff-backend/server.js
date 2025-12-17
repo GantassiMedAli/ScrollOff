@@ -1,32 +1,29 @@
 import express from "express";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { db } from "./config/db.js";
 
 dotenv.config();
 
 const app = express();
 
-// Pour lire JSON
+// Lire JSON
 app.use(express.json());
 
-// Connect to MongoDB
-if (!process.env.MONGO_URI) {
-  console.error("❌ Error: MONGO_URI is not defined in .env file");
-  console.log("💡 Please create a .env file with: MONGO_URI=your_mongodb_connection_string");
-  process.exit(1);
-}
-
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected ✔️"))
-  .catch(err => console.log("MongoDB Error ❌", err));
-
-// Démarrer le serveur
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+// Test MySQL connection
+db.query("SELECT 1", (err) => {
+  if (err) {
+    console.error("❌ MySQL connection failed:", err);
+  } else {
+    console.log("✅ MySQL connected successfully");
+  }
 });
+
+// Route test
 app.get("/", (req, res) => {
-  res.send("API ScrollOff is working 😎");
+  res.send("API ScrollOff is working 😎 (MySQL only)");
 });
 
-
-
+// Start server
+app.listen(3000, () => {
+  console.log("🚀 Server running on port 3000");
+});
