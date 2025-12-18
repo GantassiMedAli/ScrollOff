@@ -1,1 +1,28 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Bootstrap CSS */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* Font Awesome - Using CDN instead of npm package */
+/* Add this to your index.html: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> */
+
+/* Admin Layout Styles */
+.admin-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.admin-content-wrapper {
+  display: flex;
+  margin-top: 70px;
+  min-height: calc(100vh - 70px);
+}
+
+.page-container, .dashboard-container {
+  margin-left: 250px;
+  padding: 2rem;
+  background-color: #F9FAFB;
+  flex: 1;
+  width: calc(100% - 250px);
+}

@@ -1,17 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Api {
-
-  baseUrl = 'http://localhost:3000';
+  baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
-
-  // Exemple d'appel API
-  getTest() {
-    return this.http.get(`${this.baseUrl}/test`);
-  }
 }
