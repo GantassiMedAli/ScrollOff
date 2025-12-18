@@ -1,0 +1,47 @@
+.admin-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.admin-content-wrapper {
+  display: flex;
+  margin-top: 70px;
+  min-height: calc(100vh - 70px);
+}
+
+.dashboard-container {
+  margin-left: 250px;
+  padding: 2rem;
+  background-color: #F9FAFB;
+  flex: 1;
+  width: calc(100% - 250px);
+}
+
+.page-title {
+  color: #111827;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.chart-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  color: #111827;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.chart-placeholder {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #F9FAFB;
+  border-radius: 8px;
+}

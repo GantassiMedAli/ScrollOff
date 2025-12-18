@@ -1,0 +1,74 @@
+.stats-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+}
+
+.stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stats-card-primary {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  color: white;
+}
+
+.stats-card-success {
+  background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+  color: white;
+}
+
+.stats-card-warning {
+  background: linear-gradient(135deg, #FACC15 0%, #EAB308 100%);
+  color: white;
+}
+
+.stats-card-danger {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: white;
+}
+
+.stats-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  opacity: 0.9;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stats-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.stats-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  opacity: 0.2;
+}
+
+.icon-primary {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.icon-success {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.icon-warning {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.icon-danger {
+  background-color: rgba(255, 255, 255, 0.2);
+}

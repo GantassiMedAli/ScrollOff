@@ -1,0 +1,144 @@
+<div class="admin-layout">
+  <app-navbar></app-navbar>
+  <div class="admin-content-wrapper">
+    <app-sidebar></app-sidebar>
+    <div class="page-container">
+      <div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="page-title">Challenges Management</h2>
+        <p class="text-muted">Manage challenges and activities</p>
+      </div>
+      <button class="btn btn-primary" (click)="openCreateForm()">
+        <i class="fas fa-plus me-2"></i>Add New Challenge
+      </button>
+    </div>
+
+    <!-- Create/Edit Form -->
+    <div class="card mb-4" *ngIf="showForm">
+      <div class="card-body">
+        <h5 class="card-title">{{ editingChallenge ? 'Edit Challenge' : 'Create New Challenge' }}</h5>
+        <form [formGroup]="challengeForm" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="titre" class="form-label">Title</label>
+              <input
+                type="text"
+                class="form-control"
+                id="titre"
+                formControlName="titre"
+                [class.is-invalid]="challengeForm.get('titre')?.invalid && challengeForm.get('titre')?.touched"
+                placeholder="Enter challenge title"
+              />
+              <div *ngIf="challengeForm.get('titre')?.invalid && challengeForm.get('titre')?.touched" class="invalid-feedback">
+                Title is required
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="niveau" class="form-label">Level</label>
+              <input
+                type="text"
+                class="form-control"
+                id="niveau"
+                formControlName="niveau"
+                [class.is-invalid]="challengeForm.get('niveau')?.invalid && challengeForm.get('niveau')?.touched"
+                placeholder="e.g., Beginner"
+              />
+              <div *ngIf="challengeForm.get('niveau')?.invalid && challengeForm.get('niveau')?.touched" class="invalid-feedback">
+                Level is required
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="duree" class="form-label">Duration (minutes)</label>
+              <input
+                type="number"
+                class="form-control"
+                id="duree"
+                formControlName="duree"
+                [class.is-invalid]="challengeForm.get('duree')?.invalid && challengeForm.get('duree')?.touched"
+                min="1"
+                placeholder="30"
+              />
+              <div *ngIf="challengeForm.get('duree')?.invalid && challengeForm.get('duree')?.touched" class="invalid-feedback">
+                Duration is required (minimum 1 minute)
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea
+              class="form-control"
+              id="description"
+              formControlName="description"
+              rows="4"
+              [class.is-invalid]="challengeForm.get('description')?.invalid && challengeForm.get('description')?.touched"
+              placeholder="Enter challenge description"
+            ></textarea>
+            <div *ngIf="challengeForm.get('description')?.invalid && challengeForm.get('description')?.touched" class="invalid-feedback">
+              Description is required
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary" [disabled]="challengeForm.invalid">
+              {{ editingChallenge ? 'Update' : 'Create' }}
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Challenges Table -->
+    <div class="card">
+      <div class="card-body">
+        <div *ngIf="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+        <div *ngIf="!loading">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Level</th>
+                  <th>Duration</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let challenge of challenges">
+                  <td>{{ challenge.id }}</td>
+                  <td>{{ challenge.titre }}</td>
+                  <td>{{ getTruncatedContent(challenge.description) }}</td>
+                  <td>
+                    <span class="badge bg-secondary">{{ challenge.niveau }}</span>
+                  </td>
+                  <td>{{ challenge.duree }} min</td>
+                  <td>
+                    <button class="btn btn-sm btn-primary me-2" (click)="openEditForm(challenge)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteChallenge(challenge)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="challenges.length === 0">
+                  <td colspan="6" class="text-center text-muted py-4">
+                    No challenges found
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,126 @@
+<div class="admin-layout">
+  <app-navbar></app-navbar>
+  <div class="admin-content-wrapper">
+    <app-sidebar></app-sidebar>
+    <div class="page-container">
+      <div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="page-title">Tips Management</h2>
+        <p class="text-muted">Manage tips and advice for users</p>
+      </div>
+      <button class="btn btn-primary" (click)="openCreateForm()">
+        <i class="fas fa-plus me-2"></i>Add New Tip
+      </button>
+    </div>
+
+    <!-- Create/Edit Form -->
+    <div class="card mb-4" *ngIf="showForm">
+      <div class="card-body">
+        <h5 class="card-title">{{ editingTip ? 'Edit Tip' : 'Create New Tip' }}</h5>
+        <form [formGroup]="tipForm" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="titre" class="form-label">Title</label>
+              <input
+                type="text"
+                class="form-control"
+                id="titre"
+                formControlName="titre"
+                [class.is-invalid]="tipForm.get('titre')?.invalid && tipForm.get('titre')?.touched"
+                placeholder="Enter tip title"
+              />
+              <div *ngIf="tipForm.get('titre')?.invalid && tipForm.get('titre')?.touched" class="invalid-feedback">
+                Title is required
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="niveau" class="form-label">Level</label>
+              <select
+                class="form-select"
+                id="niveau"
+                formControlName="niveau"
+                [class.is-invalid]="tipForm.get('niveau')?.invalid && tipForm.get('niveau')?.touched"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="contenu" class="form-label">Content</label>
+            <textarea
+              class="form-control"
+              id="contenu"
+              formControlName="contenu"
+              rows="4"
+              [class.is-invalid]="tipForm.get('contenu')?.invalid && tipForm.get('contenu')?.touched"
+              placeholder="Enter tip content"
+            ></textarea>
+            <div *ngIf="tipForm.get('contenu')?.invalid && tipForm.get('contenu')?.touched" class="invalid-feedback">
+              Content is required
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary" [disabled]="tipForm.invalid">
+              {{ editingTip ? 'Update' : 'Create' }}
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tips Table -->
+    <div class="card">
+      <div class="card-body">
+        <div *ngIf="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+        <div *ngIf="!loading">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Content</th>
+                  <th>Level</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let tip of tips">
+                  <td>{{ tip.id }}</td>
+                  <td>{{ tip.titre }}</td>
+                  <td>{{ getTruncatedContent(tip.contenu) }}</td>
+                  <td>
+                    <span [class]="getNiveauClass(tip.niveau)">{{ tip.niveau }}</span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-primary me-2" (click)="openEditForm(tip)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteTip(tip)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="tips.length === 0">
+                  <td colspan="5" class="text-center text-muted py-4">
+                    No tips found
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
