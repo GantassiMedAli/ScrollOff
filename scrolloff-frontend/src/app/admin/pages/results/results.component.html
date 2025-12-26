@@ -1,0 +1,108 @@
+<div class="admin-layout">
+  <app-navbar></app-navbar>
+  <div class="admin-content-wrapper">
+    <app-sidebar></app-sidebar>
+    <div class="page-container">
+      <div class="container-fluid">
+        <div class="mb-4">
+          <h2 class="page-title">Results Statistics</h2>
+          <p class="text-muted">View statistics and analytics for test results</p>
+        </div>
+
+        <div *ngIf="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+        <div *ngIf="!loading">
+          <!-- Statistics Cards -->
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <div class="stat-card">
+                <div class="stat-icon bg-primary">
+                  <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="stat-content">
+                  <h3 class="stat-value">{{ stats.totalTests }}</h3>
+                  <p class="stat-label">Total Tests</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="stat-card">
+                <div class="stat-icon bg-success">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                  <h3 class="stat-value">{{ formatScore(stats.averageScore) }}%</h3>
+                  <p class="stat-label">Average Score</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Distribution by Level -->
+          <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Distribution by Level</h5>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Level</th>
+                          <th>Count</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of stats.distributionByLevel">
+                          <td>
+                            <span class="badge bg-secondary">{{ item.niveau }}</span>
+                          </td>
+                          <td>{{ item.count }}</td>
+                        </tr>
+                        <tr *ngIf="stats.distributionByLevel.length === 0">
+                          <td colspan="2" class="text-center text-muted">No data available</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Evolution by Date -->
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Evolution by Date (Last 30 days)</h5>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Tests</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of stats.evolutionByDate">
+                          <td>{{ formatDate(item.date) }}</td>
+                          <td>{{ item.count }}</td>
+                        </tr>
+                        <tr *ngIf="stats.evolutionByDate.length === 0">
+                          <td colspan="2" class="text-center text-muted">No data available</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,72 @@
+/* Admin login component styles */
+.login-container {
+  background: linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%);
+  min-height: 100vh;
+}
+
+.login-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-header h2 {
+  color: #111827;
+  font-weight: 600;
+  font-size: 1.75rem;
+}
+
+.form-label {
+  color: #111827;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s;
+}
+
+.form-control:focus {
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+.btn-primary {
+  background-color: #3B82F6;
+  border-color: #3B82F6;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #2563EB;
+  border-color: #2563EB;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.alert-danger {
+  border-radius: 8px;
+  border: none;
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+.invalid-feedback {
+  display: block;
+}
+

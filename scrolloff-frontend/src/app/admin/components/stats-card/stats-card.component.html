@@ -1,0 +1,14 @@
+<div class="stats-card" [ngClass]="'stats-card-' + color">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <h6 class="stats-title">{{ title }}</h6>
+        <h3 class="stats-value">{{ value }}</h3>
+      </div>
+      <div class="stats-icon" [ngClass]="'icon-' + color">
+        <i [class]="icon"></i>
+      </div>
+    </div>
+  </div>
+</div>
+

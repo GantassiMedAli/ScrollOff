@@ -1,0 +1,29 @@
+.admin-navbar {
+  background-color: #3B82F6;
+  color: white;
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  color: white !important;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.admin-username {
+  color: white;
+  font-weight: 500;
+}
+
+.btn-outline-light {
+  border-color: white;
+  color: white;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.btn-outline-light:hover {
+  background-color: white;
+  color: #3B82F6;
+}

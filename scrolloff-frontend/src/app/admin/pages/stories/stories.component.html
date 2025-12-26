@@ -1,0 +1,110 @@
+<div class="admin-layout">
+  <app-navbar></app-navbar>
+  <div class="admin-content-wrapper">
+    <app-sidebar></app-sidebar>
+    <div class="page-container">
+      <div class="container-fluid">
+    <div class="mb-4">
+      <h2 class="page-title">Stories Management</h2>
+      <p class="text-muted">Review and manage user stories</p>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4">
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          [class.active]="activeTab === 'pending'"
+          (click)="setTab('pending')"
+        >
+          Pending
+          <span class="badge bg-warning ms-2" *ngIf="pendingStoriesCount > 0">
+            {{ pendingStoriesCount }}
+          </span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          [class.active]="activeTab === 'approved'"
+          (click)="setTab('approved')"
+        >
+          Approved
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          [class.active]="activeTab === 'rejected'"
+          (click)="setTab('rejected')"
+        >
+          Rejected
+        </button>
+      </li>
+    </ul>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Stories List -->
+    <div *ngIf="!loading">
+      <div class="row g-4">
+        <div class="col-12" *ngFor="let story of filteredStories">
+          <div class="card story-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                  <h5 class="card-title mb-1">{{ story.titre }}</h5>
+                  <div class="d-flex gap-2 align-items-center">
+                    <span [class]="getStatusClass(story.statut)">{{ story.statut }}</span>
+                    <span class="badge bg-secondary" *ngIf="story.is_anonymous">Anonymous</span>
+                    <span class="text-muted small">{{ formatDate(story.date_creation) }}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <p class="card-text text-muted">{{ story.contenu }}</p>
+
+              <!-- Actions -->
+              <div class="mt-3 d-flex gap-2">
+                <button
+                  *ngIf="activeTab === 'pending'"
+                  class="btn btn-sm btn-success"
+                  (click)="approveStory(story)"
+                >
+                  <i class="fas fa-check me-1"></i> Approve
+                </button>
+                <button
+                  *ngIf="activeTab === 'pending'"
+                  class="btn btn-sm btn-danger"
+                  (click)="rejectStory(story)"
+                >
+                  <i class="fas fa-times me-1"></i> Reject
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="deleteStory(story)"
+                >
+                  <i class="fas fa-trash me-1"></i> Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12" *ngIf="hasNoStories">
+          <div class="card">
+            <div class="card-body text-center py-5 text-muted">
+              No {{ activeTab }} stories found
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<div class="admin-layout">
+  <app-navbar></app-navbar>
+  <div class="admin-content-wrapper">
+    <app-sidebar></app-sidebar>
+    <div class="page-container">
+      <div class="container-fluid">
+        <div class="mb-4">
+          <h2 class="page-title">Users Management</h2>
+          <p class="text-muted">View and manage all registered users</p>
+        </div>
+
+        <!-- Users Table -->
+        <div class="card">
+          <div class="card-body">
+            <div *ngIf="loading" class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+
+            <div *ngIf="!loading">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Registration Date</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let user of users">
+                      <td>{{ user.id }}</td>
+                      <td>{{ user.name }}</td>
+                      <td>{{ user.email }}</td>
+                      <td>{{ formatDate(user.date_inscription) }}</td>
+                      <td>
+                        <span [class]="user.is_active ? 'badge bg-success' : 'badge bg-secondary'">
+                          {{ user.is_active ? 'Active' : 'Disabled' }}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          class="btn btn-sm"
+                          [class]="user.is_active ? 'btn-warning' : 'btn-success'"
+                          (click)="toggleUserStatus(user)"
+                        >
+                          {{ user.is_active ? 'Disable' : 'Enable' }}
+                        </button>
+                      </td>
+                    </tr>
+                    <tr *ngIf="users.length === 0">
+                      <td colspan="6" class="text-center text-muted py-4">
+                        No users found
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
