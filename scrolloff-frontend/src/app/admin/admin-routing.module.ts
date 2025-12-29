@@ -23,7 +23,7 @@ const routes: Routes = [
   {
     path: 'users',
     component: UsersComponent,
-    canActivate: [AdminGuard]
+     canActivate: [AdminGuard]
   },
   {
     path: 'results',

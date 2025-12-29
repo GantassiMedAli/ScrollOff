@@ -1,0 +1,8 @@
+.about-hero {
+  background: linear-gradient(135deg, #ffe08a, #ffd36e);
+  border-radius: 0 0 40px 40px;
+}
+
+.card {
+  border-radius: 16px;
+}

@@ -12,6 +12,9 @@ import { UserChallengesComponent } from './pages/challenges/challenges.component
     TestComponent,
     UserStoriesComponent,
     UserChallengesComponent
+    
+    
+    
   ],
   imports: [
     CommonModule,
@@ -20,7 +23,7 @@ import { UserChallengesComponent } from './pages/challenges/challenges.component
 })
 export class UserModule { }
 
-
+  
 
 
 

@@ -10,7 +10,9 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+// Use CORS for all routes and allow Authorization header — remove the app.options('*', cors())
+// which causes an Express path parsing error in newer path-to-regexp versions.
+app.use(cors({ origin: true, credentials: true, allowedHeaders: ['Content-Type', 'Authorization'] }));
 app.use(express.json());
 
 // Test MySQL connection
@@ -22,23 +24,48 @@ db.query("SELECT 1", (err) => {
   }
 });
 
-// JWT Secret
+// JWT Secret (set this in your .env for local development and to match any other environment)
 const JWT_SECRET = process.env.JWT_SECRET || "scrolloff-secret-key-change-in-production";
+if (!process.env.JWT_SECRET) {
+  // Warn in development when a secret isn't set so the developer knows to add one locally.
+  console.warn("⚠️  JWT_SECRET not set in .env - using default development secret.\nSet JWT_SECRET in .env to a strong value and make sure the frontend/client and other services use the same secret when sharing tokens.");
+}
 
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  
-  if (!token) {
+  // Accept token from Authorization header, x-access-token header, or request body (convenient for testing)
+  let authHeader = req.headers.authorization || req.headers['x-access-token'] || req.body?.token;
+
+  if (!authHeader) {
+    return res.status(401).json({ error: "No token provided" });
+  }
+
+  // Normalize token string (remove Bearer prefix, surrounding quotes, and whitespace)
+  let token = authHeader;
+  if (typeof token === 'string') {
+    token = token.trim();
+    if (token.toLowerCase().startsWith('bearer ')) {
+      token = token.slice(7).trim();
+    }
+    // remove surrounding quotes if present
+    token = token.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
+  }
+
+  if (!token || token === 'null' || token === 'undefined') {
     return res.status(401).json({ error: "No token provided" });
   }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.adminId = decoded.id;
+    // attach raw token for easier debugging/inspection in logs
+    req.token = token;
     next();
   } catch (error) {
-    return res.status(401).json({ error: "Invalid token" });
+    // Log the exact verification failure to help debugging locally (signature, expired, malformed, etc.)
+    console.debug('JWT verification failed:', error.message);
+    // Return the message "Token mismatch" for compatibility with some clients that expect that wording.
+    return res.status(401).json({ error: "Token mismatch" });
   }
 };
 
@@ -69,16 +96,23 @@ app.post("/api/admin/login", async (req, res) => {
 
         const admin = results[0];
 
-        // Verify password (assuming password is hashed with bcrypt)
-        const isValidPassword = await bcrypt.compare(password, admin.password);
+        // Verify password (supports bcrypt-hashed passwords and legacy plaintext DB entries)
+        const storedPass = admin.mot_de_passe || admin.password;
+        let isValidPassword = false;
+        if (storedPass && (storedPass.startsWith('$2a$') || storedPass.startsWith('$2b$') || storedPass.startsWith('$2y$'))) {
+          isValidPassword = await bcrypt.compare(password, storedPass);
+        } else {
+          // Fallback for plaintext password in DB (migrate to hashed passwords asap)
+          isValidPassword = password === storedPass;
+        }
 
         if (!isValidPassword) {
           return res.status(401).json({ error: "Invalid credentials" });
         }
 
-        // Generate JWT token
+        // Generate JWT token (use id_admin as id)
         const token = jwt.sign(
-          { id: admin.id, username: admin.username },
+          { id: admin.id_admin, username: admin.username },
           JWT_SECRET,
           { expiresIn: "24h" }
         );
@@ -86,7 +120,7 @@ app.post("/api/admin/login", async (req, res) => {
         res.json({
           token,
           admin: {
-            id: admin.id,
+            id: admin.id_admin,
             username: admin.username
           }
         });
@@ -104,8 +138,8 @@ app.post("/api/admin/login", async (req, res) => {
 app.get("/api/admin/stats", verifyToken, (req, res) => {
   const stats = {};
 
-  // Total users
-  db.query("SELECT COUNT(*) as total FROM users", (err, results) => {
+  // Total users (table utilisateur in DB)
+  db.query("SELECT COUNT(*) as total FROM utilisateur", (err, results) => {
     if (err) {
       console.error("Error getting users count:", err);
       stats.totalUsers = 0;
@@ -113,8 +147,8 @@ app.get("/api/admin/stats", verifyToken, (req, res) => {
       stats.totalUsers = results[0].total;
     }
 
-    // Total tests (results)
-    db.query("SELECT COUNT(*) as total FROM results", (err, results) => {
+    // Total tests (table resultat in DB)
+    db.query("SELECT COUNT(*) as total FROM resultat", (err, results) => {
       if (err) {
         console.error("Error getting results count:", err);
         stats.totalTests = 0;
@@ -152,10 +186,12 @@ app.get("/api/admin/stats", verifyToken, (req, res) => {
 
 // ==================== USERS ROUTES ====================
 
-// Get all users
+// Get all users (map utilisateur fields to API contract)
 app.get("/api/admin/users", verifyToken, (req, res) => {
+  // Note: the utilisateur table does not have an is_active column in the current schema.
+  // Return a default is_active = 1 so frontend UI can render status without error.
   db.query(
-    "SELECT id, name, email, date_inscription, is_active FROM users ORDER BY date_inscription DESC",
+    "SELECT id_user AS id, nom AS name, email, date_inscription, 1 AS is_active FROM utilisateur ORDER BY date_inscription DESC",
     (err, results) => {
       if (err) {
         console.error("Error fetching users:", err);
@@ -166,22 +202,38 @@ app.get("/api/admin/users", verifyToken, (req, res) => {
   );
 });
 
-// Update user status (enable/disable)
+// Update user status (enable/disable) - operates on utilisateur
 app.patch("/api/admin/users/:id", verifyToken, (req, res) => {
   const { id } = req.params;
   const { is_active } = req.body;
 
-  db.query(
-    "UPDATE users SET is_active = ? WHERE id = ?",
-    [is_active, id],
-    (err, results) => {
-      if (err) {
-        console.error("Error updating user:", err);
-        return res.status(500).json({ error: "Failed to update user" });
-      }
-      res.json({ message: "User updated successfully" });
+  // The utilisateur table may not have is_active column in the current schema.
+  // Check for the column first; if it's missing, return success but do not attempt to update
+  // (prevents SQL errors and keeps server stable). Recommend adding is_active column
+  // in a future migration to make this persistent.
+  db.query("SHOW COLUMNS FROM utilisateur LIKE 'is_active'", (err, cols) => {
+    if (err) {
+      console.error("Error checking user schema:", err);
+      return res.status(500).json({ error: "Failed to update user" });
     }
-  );
+
+    if (!cols || cols.length === 0) {
+      console.warn("is_active column missing; ignoring update for user id", id);
+      return res.json({ message: "User status feature not available (schema missing), client updated locally" });
+    }
+
+    db.query(
+      "UPDATE utilisateur SET is_active = ? WHERE id_user = ?",
+      [is_active, id],
+      (err, results) => {
+        if (err) {
+          console.error("Error updating user:", err);
+          return res.status(500).json({ error: "Failed to update user" });
+        }
+        res.json({ message: "User updated successfully" });
+      }
+    );
+  });
 });
 
 // ==================== RESULTS ROUTES ====================
@@ -190,8 +242,8 @@ app.patch("/api/admin/users/:id", verifyToken, (req, res) => {
 app.get("/api/admin/results/stats", verifyToken, (req, res) => {
   const stats = {};
 
-  // Total tests
-  db.query("SELECT COUNT(*) as total FROM results", (err, results) => {
+  // Total tests (table resultat)
+  db.query("SELECT COUNT(*) as total FROM resultat", (err, results) => {
     if (err) {
       stats.totalTests = 0;
     } else {
@@ -199,7 +251,7 @@ app.get("/api/admin/results/stats", verifyToken, (req, res) => {
     }
 
     // Average score
-    db.query("SELECT AVG(score) as avg FROM results", (err, results) => {
+    db.query("SELECT AVG(score) as avg FROM resultat", (err, results) => {
       if (err) {
         stats.averageScore = 0;
       } else {
@@ -208,7 +260,7 @@ app.get("/api/admin/results/stats", verifyToken, (req, res) => {
 
       // Distribution by level
       db.query(
-        "SELECT niveau, COUNT(*) as count FROM results GROUP BY niveau",
+        "SELECT niveau, COUNT(*) as count FROM resultat GROUP BY niveau",
         (err, results) => {
           if (err) {
             stats.distributionByLevel = [];
@@ -218,7 +270,7 @@ app.get("/api/admin/results/stats", verifyToken, (req, res) => {
 
           // Evolution by date
           db.query(
-            "SELECT DATE(date_test) as date, COUNT(*) as count FROM results GROUP BY DATE(date_test) ORDER BY date DESC LIMIT 30",
+            "SELECT DATE(date_test) as date, COUNT(*) as count FROM resultat GROUP BY DATE(date_test) ORDER BY date DESC LIMIT 30",
             (err, results) => {
               if (err) {
                 stats.evolutionByDate = [];
@@ -237,11 +289,11 @@ app.get("/api/admin/results/stats", verifyToken, (req, res) => {
 
 // ==================== STORIES ROUTES ====================
 
-// Get all stories with filters
+// Get all stories with filters (map DB: id_story -> id, date_pub -> date_creation, add titre fallback)
 app.get("/api/admin/stories", verifyToken, (req, res) => {
   const { statut } = req.query;
 
-  let query = "SELECT * FROM stories";
+  let query = "SELECT id_story AS id, COALESCE(titre, '') AS titre, contenu, statut, is_anonymous, date_pub AS date_creation, id_user FROM stories";
   const params = [];
 
   if (statut) {
@@ -249,7 +301,7 @@ app.get("/api/admin/stories", verifyToken, (req, res) => {
     params.push(statut);
   }
 
-  query += " ORDER BY date_creation DESC";
+  query += " ORDER BY date_pub DESC";
 
   db.query(query, params, (err, results) => {
     if (err) {
@@ -270,7 +322,7 @@ app.patch("/api/admin/stories/:id", verifyToken, (req, res) => {
   }
 
   db.query(
-    "UPDATE stories SET statut = ? WHERE id = ?",
+    "UPDATE stories SET statut = ? WHERE id_story = ?",
     [statut, id],
     (err, results) => {
       if (err) {
@@ -286,7 +338,7 @@ app.patch("/api/admin/stories/:id", verifyToken, (req, res) => {
 app.delete("/api/admin/stories/:id", verifyToken, (req, res) => {
   const { id } = req.params;
 
-  db.query("DELETE FROM stories WHERE id = ?", [id], (err, results) => {
+  db.query("DELETE FROM stories WHERE id_story = ?", [id], (err, results) => {
     if (err) {
       console.error("Error deleting story:", err);
       return res.status(500).json({ error: "Failed to delete story" });
@@ -297,10 +349,10 @@ app.delete("/api/admin/stories/:id", verifyToken, (req, res) => {
 
 // ==================== TIPS ROUTES ====================
 
-// Get all tips
+// Get all tips (alias id_tip -> id)
 app.get("/api/admin/tips", verifyToken, (req, res) => {
   db.query(
-    "SELECT * FROM tips ORDER BY id DESC",
+    "SELECT id_tip AS id, titre, contenu, niveau, id_admin FROM tips ORDER BY id_tip DESC",
     (err, results) => {
       if (err) {
         console.error("Error fetching tips:", err);
@@ -315,7 +367,7 @@ app.get("/api/admin/tips", verifyToken, (req, res) => {
 app.get("/api/admin/tips/:id", verifyToken, (req, res) => {
   const { id } = req.params;
 
-  db.query("SELECT * FROM tips WHERE id = ?", [id], (err, results) => {
+  db.query("SELECT id_tip AS id, titre, contenu, niveau, id_admin FROM tips WHERE id_tip = ?", [id], (err, results) => {
     if (err) {
       console.error("Error fetching tip:", err);
       return res.status(500).json({ error: "Failed to fetch tip" });
@@ -358,7 +410,7 @@ app.put("/api/admin/tips/:id", verifyToken, (req, res) => {
   }
 
   db.query(
-    "UPDATE tips SET titre = ?, contenu = ?, niveau = ? WHERE id = ?",
+    "UPDATE tips SET titre = ?, contenu = ?, niveau = ? WHERE id_tip = ?",
     [titre, contenu, niveau, id],
     (err, results) => {
       if (err) {
@@ -374,7 +426,7 @@ app.put("/api/admin/tips/:id", verifyToken, (req, res) => {
 app.delete("/api/admin/tips/:id", verifyToken, (req, res) => {
   const { id } = req.params;
 
-  db.query("DELETE FROM tips WHERE id = ?", [id], (err, results) => {
+  db.query("DELETE FROM tips WHERE id_tip = ?", [id], (err, results) => {
     if (err) {
       console.error("Error deleting tip:", err);
       return res.status(500).json({ error: "Failed to delete tip" });
@@ -388,7 +440,7 @@ app.delete("/api/admin/tips/:id", verifyToken, (req, res) => {
 // Get all resources
 app.get("/api/admin/resources", verifyToken, (req, res) => {
   db.query(
-    "SELECT * FROM resources ORDER BY id DESC",
+    "SELECT * FROM resources ORDER BY id_resource DESC",
     (err, results) => {
       if (err) {
         console.error("Error fetching resources:", err);
@@ -403,7 +455,7 @@ app.get("/api/admin/resources", verifyToken, (req, res) => {
 app.get("/api/admin/resources/:id", verifyToken, (req, res) => {
   const { id } = req.params;
 
-  db.query("SELECT * FROM resources WHERE id = ?", [id], (err, results) => {
+  db.query("SELECT id_resource AS id, titre, description, lien, type, date_ajout, id_admin FROM resources WHERE id_resource = ?", [id], (err, results) => {
     if (err) {
       console.error("Error fetching resource:", err);
       return res.status(500).json({ error: "Failed to fetch resource" });
@@ -446,7 +498,7 @@ app.put("/api/admin/resources/:id", verifyToken, (req, res) => {
   }
 
   db.query(
-    "UPDATE resources SET titre = ?, description = ?, lien = ?, type = ? WHERE id = ?",
+    "UPDATE resources SET titre = ?, description = ?, lien = ?, type = ? WHERE id_resource = ?",
     [titre, description, lien, type, id],
     (err, results) => {
       if (err) {
@@ -462,7 +514,7 @@ app.put("/api/admin/resources/:id", verifyToken, (req, res) => {
 app.delete("/api/admin/resources/:id", verifyToken, (req, res) => {
   const { id } = req.params;
 
-  db.query("DELETE FROM resources WHERE id = ?", [id], (err, results) => {
+  db.query("DELETE FROM resources WHERE id_resource = ?", [id], (err, results) => {
     if (err) {
       console.error("Error deleting resource:", err);
       return res.status(500).json({ error: "Failed to delete resource" });
@@ -473,10 +525,10 @@ app.delete("/api/admin/resources/:id", verifyToken, (req, res) => {
 
 // ==================== CHALLENGES ROUTES ====================
 
-// Get all challenges
+// Get all challenges (alias id_challenge -> id)
 app.get("/api/admin/challenges", verifyToken, (req, res) => {
   db.query(
-    "SELECT * FROM challenges ORDER BY id DESC",
+    "SELECT id_challenge AS id, titre, description, niveau, duree FROM challenges ORDER BY id_challenge DESC",
     (err, results) => {
       if (err) {
         console.error("Error fetching challenges:", err);
@@ -491,7 +543,7 @@ app.get("/api/admin/challenges", verifyToken, (req, res) => {
 app.get("/api/admin/challenges/:id", verifyToken, (req, res) => {
   const { id } = req.params;
 
-  db.query("SELECT * FROM challenges WHERE id = ?", [id], (err, results) => {
+  db.query("SELECT id_challenge AS id, titre, description, niveau, duree FROM challenges WHERE id_challenge = ?", [id], (err, results) => {
     if (err) {
       console.error("Error fetching challenge:", err);
       return res.status(500).json({ error: "Failed to fetch challenge" });
@@ -534,7 +586,7 @@ app.put("/api/admin/challenges/:id", verifyToken, (req, res) => {
   }
 
   db.query(
-    "UPDATE challenges SET titre = ?, description = ?, niveau = ?, duree = ? WHERE id = ?",
+    "UPDATE challenges SET titre = ?, description = ?, niveau = ?, duree = ? WHERE id_challenge = ?",
     [titre, description, niveau, duree, id],
     (err, results) => {
       if (err) {
@@ -550,7 +602,7 @@ app.put("/api/admin/challenges/:id", verifyToken, (req, res) => {
 app.delete("/api/admin/challenges/:id", verifyToken, (req, res) => {
   const { id } = req.params;
 
-  db.query("DELETE FROM challenges WHERE id = ?", [id], (err, results) => {
+  db.query("DELETE FROM challenges WHERE id_challenge = ?", [id], (err, results) => {
     if (err) {
       console.error("Error deleting challenge:", err);
       return res.status(500).json({ error: "Failed to delete challenge" });
@@ -564,7 +616,26 @@ app.get("/", (req, res) => {
   res.send("API ScrollOff is working 😎 (MySQL only)");
 });
 
-// Start server
-app.listen(3000, () => {
-  console.log("🚀 Server running on port 3000");
+// Start server (configurable via PORT environment variable)
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
+
+// Migrate admin passwords to bcrypt (run once)
+// import bcrypt from 'bcryptjs';
+// import { db } from '../config/db.js'; // adjust path if needed
+
+// db.query('SELECT id_admin, mot_de_passe FROM admin', (err, rows) => {
+//   if (err) return console.error(err);
+//   rows.forEach(row => {
+//     const pass = row.mot_de_passe || '';
+//     if (!pass.startsWith('$2')) { // naive check: not hashed
+//       const hash = bcrypt.hashSync(pass, 10);
+//       db.query('UPDATE admin SET mot_de_passe = ? WHERE id_admin = ?', [hash, row.id_admin], (err2) => {
+//         if (err2) console.error('Failed to update admin', row.id_admin, err2);
+//         else console.log('Hashed admin', row.id_admin);
+//       });
+//     }
+//   });
+// });
