@@ -1,39 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
-  <div class="container">
-    <a class="navbar-brand" href="#">
-      <span class="brand-name text-primary">ScrollOff</span>
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav mx-auto align-items-center">
-        <li class="nav-item">
-          <a class="nav-link" href="#home">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#quiz">Quiz</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#tips">Tips</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#challenges">Challenges</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#stories">Stories</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#about">About</a>
-        </li>
-      </ul>
-      <div class="d-flex">
-        <a class="btn btn-primary btn-nav" href="#login">Login</a>
-      </div>
-    </div>
-  </div>
-</nav>
+<app-user-navbar></app-user-navbar>
 <section class="hero-section d-flex align-items-center text-center text-white">
   <div class="container">
     <div class="row justify-content-center">
@@ -135,75 +100,38 @@
       Take on challenges designed to build better digital habits
     </p>
 
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="border-card challenge-gradient-card">
-          <h5>Digital Sunset</h5>
-          <p class="text-muted">
-            Avoid screens one hour before sleep for better rest.
-          </p>
-          <button class="challenge-btn btn-sm">
-            Join Challenge
-          </button>
-        </div>
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
+    </div>
 
-      <div class="col-md-4">
+    <div *ngIf="!loading" class="row g-4">
+      <div class="col-md-4" *ngFor="let challenge of displayedChallenges">
         <div class="border-card challenge-gradient-card">
-          <h5>Focus Week</h5>
+          <h5>{{ challenge.titre }}</h5>
           <p class="text-muted">
-            Reduce distractions and improve concentration for 7 days.
+            {{ challenge.description }}
           </p>
           <button class="challenge-btn btn-sm">
             Join Challenge
           </button>
         </div>
       </div>
+    </div>
 
-      <div class="col-md-4">
-        <div class="border-card challenge-gradient-card">
-          <h5>No Scroll Day</h5>
-          <p class="text-muted">
-            Spend a full day without social media scrolling.
-          </p>
-          <button class="challenge-btn btn-sm">
-            Join Challenge
-          </button>
-        </div>
-      </div>
+    <div *ngIf="!loading && hasMoreChallenges" class="mt-4">
+      <button class="btn btn-primary btn-lg" (click)="viewAllChallenges()">
+        View All Challenges
+      </button>
+    </div>
+
+    <div *ngIf="!loading && displayedChallenges.length === 0" class="text-muted py-4">
+      No challenges available at the moment.
     </div>
   </div>
 </section>
-<footer class="footer">
-  <div class="container">
-    <div class="row py-4 align-items-start">
-      
-      <!-- Left: Brand -->
-      <div class="col-md-6">
-        <h5 class="footer-brand">ScrollOff</h5>
-        <p class="footer-description">
-          Helping you build healthier digital habits.
-        </p>
-      </div>
-
-      <!-- Right: Links -->
-      <div class="col-md-6 text-md-end">
-        <ul class="footer-links">
-          <li><a href="#about">About</a></li>
-          <li><a href="#privacy">Privacy</a></li>
-          <li><a href="#terms">Terms</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </div>
-
-    </div>
-
-    <!-- Bottom line -->
-    <div class="footer-bottom text-center py-3">
-      <small>© 2025 ScrollOff. All rights reserved.</small>
-    </div>
-  </div>
-</footer>
+<app-user-footer></app-user-footer>
 
 
 

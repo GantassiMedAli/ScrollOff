@@ -1,47 +1,4 @@
 /* Home component styles */
-.navbar
-{
-    padding: 0.75rem 0;
-    transition: all 0.3s ease;
-    border-bottom: 1px solid #e9ecef;
-
-}
-.brand-name
-{
-    font-size: 1.5rem;
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    font-weight: 700;
-    color: #007bff;
-    text-decoration: none;  
-}
-.navbar-nav
-{
-    gap: 0.5em;
-}
-.navbar-nav.nav-link
-{
-    color:#6c757d;
-    font-weight: 400;
-    padding: 0.5rem 1rem;
-    transition: color 0.3s ease;
-    font-size: 1rem;
-}
-.navbar-nav.nav-link:hover
-{
-    color:#007bff;
-    text-decoration: none;
-}
-.btn-nav
-{
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 0.5rem 1.75rem;
-    border-radius: 0.25rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    font-size: 1rem;
-}
 .hero-section {
     min-height: 80vh;
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
@@ -126,49 +83,6 @@
 
     padding: 2rem;
     transition: all 0.3s ease;
-}
-.footer {
-    background-color: #111827;
-}
-
-.footer-brand {
-    color: #FFFFFF;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.footer-description {
-    color: #9CA3AF;
-    font-size: 0.95rem;
-    max-width: 320px;
-}
-
-.footer-links {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.footer-links li {
-    display: inline-block;
-    margin-left: 1.5rem;
-}
-
-.footer-links a {
-    color: #9CA3AF;
-    text-decoration: none;
-    font-size: 0.95rem;
-    transition: color 0.2s ease;
-}
-
-.footer-links a:hover {
-    color: #FFFFFF;
-}
-
-.footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    color: #9CA3AF;
-    font-size: 0.85rem;
 }
 
 

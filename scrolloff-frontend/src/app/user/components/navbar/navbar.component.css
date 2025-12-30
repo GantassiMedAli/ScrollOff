@@ -1,0 +1,60 @@
+.navbar {
+  padding: 0.75rem 0;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.navbar-nav {
+  gap: 0.5em;
+}
+
+.navbar-nav .nav-link {
+  color: #6c757d;
+  font-weight: 400;
+  padding: 0.5rem 1rem;
+  transition: color 0.3s ease;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.btn-nav {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.75rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.btn-nav:hover {
+  background: #0056b3;
+  color: white;
+}
+
+.btn-outline-primary.btn-nav {
+  background: transparent;
+  color: #007bff;
+  border: 1px solid #007bff;
+}
+
+.btn-outline-primary.btn-nav:hover {
+  background: #007bff;
+  color: white;
+}
+

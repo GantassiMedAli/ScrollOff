@@ -24,32 +24,21 @@ db.query("SELECT 1", (err) => {
   }
 });
 
-// JWT Secret (set this in your .env for local development and to match any other environment)
+// JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || "scrolloff-secret-key-change-in-production";
-if (!process.env.JWT_SECRET) {
-  // Warn in development when a secret isn't set so the developer knows to add one locally.
-  console.warn("⚠️  JWT_SECRET not set in .env - using default development secret.\nSet JWT_SECRET in .env to a strong value and make sure the frontend/client and other services use the same secret when sharing tokens.");
-}
 
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
-  // Accept token from Authorization header, x-access-token header, or request body (convenient for testing)
-  let authHeader = req.headers.authorization || req.headers['x-access-token'] || req.body?.token;
+  const authHeader = req.headers.authorization || req.headers['x-access-token'];
 
   if (!authHeader) {
     return res.status(401).json({ error: "No token provided" });
   }
 
-  // Normalize token string (remove Bearer prefix, surrounding quotes, and whitespace)
-  let token = authHeader;
-  if (typeof token === 'string') {
-    token = token.trim();
-    if (token.toLowerCase().startsWith('bearer ')) {
-      token = token.slice(7).trim();
-    }
-    // remove surrounding quotes if present
-    token = token.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
-  }
+  // Support both "Bearer <token>" and raw token strings
+  const token = typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
+    ? authHeader.split(' ')[1]
+    : authHeader;
 
   if (!token || token === 'null' || token === 'undefined') {
     return res.status(401).json({ error: "No token provided" });
@@ -58,14 +47,10 @@ const verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.adminId = decoded.id;
-    // attach raw token for easier debugging/inspection in logs
-    req.token = token;
     next();
   } catch (error) {
-    // Log the exact verification failure to help debugging locally (signature, expired, malformed, etc.)
     console.debug('JWT verification failed:', error.message);
-    // Return the message "Token mismatch" for compatibility with some clients that expect that wording.
-    return res.status(401).json({ error: "Token mismatch" });
+    return res.status(401).json({ error: "Invalid token" });
   }
 };
 
@@ -138,7 +123,7 @@ app.post("/api/admin/login", async (req, res) => {
 app.get("/api/admin/stats", verifyToken, (req, res) => {
   const stats = {};
 
-  // Total users (table utilisateur in DB)
+  // Total users (table `utilisateur` in DB)
   db.query("SELECT COUNT(*) as total FROM utilisateur", (err, results) => {
     if (err) {
       console.error("Error getting users count:", err);
@@ -147,7 +132,7 @@ app.get("/api/admin/stats", verifyToken, (req, res) => {
       stats.totalUsers = results[0].total;
     }
 
-    // Total tests (table resultat in DB)
+    // Total tests (table `resultat` in DB)
     db.query("SELECT COUNT(*) as total FROM resultat", (err, results) => {
       if (err) {
         console.error("Error getting results count:", err);
@@ -184,12 +169,57 @@ app.get("/api/admin/stats", verifyToken, (req, res) => {
   });
 });
 
+// ==================== ADMIN MANAGEMENT ROUTES ====================
+
+// Get all admins
+app.get("/api/admin/admins", verifyToken, (req, res) => {
+  db.query(
+    "SELECT id_admin AS id, username FROM admin ORDER BY id_admin DESC",
+    (err, results) => {
+      if (err) {
+        console.error("Error fetching admins:", err);
+        return res.status(500).json({ error: "Failed to fetch admins" });
+      }
+      res.json(results);
+    }
+  );
+});
+
+// Create new admin
+app.post("/api/admin/admins", verifyToken, async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: "Username and password required" });
+  }
+
+  try {
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    db.query(
+      "INSERT INTO admin (username, mot_de_passe) VALUES (?, ?)",
+      [username, hashedPassword],
+      (err, results) => {
+        if (err) {
+          console.error("Error creating admin:", err);
+          return res.status(500).json({ error: "Failed to create admin" });
+        }
+        res.json({ id: results.insertId, message: "Admin created successfully" });
+      }
+    );
+  } catch (error) {
+    console.error("Error hashing password:", error);
+    return res.status(500).json({ error: "Failed to create admin" });
+  }
+});
+
 // ==================== USERS ROUTES ====================
 
-// Get all users (map utilisateur fields to API contract)
+// Get all users (map `utilisateur` fields to API contract)
 app.get("/api/admin/users", verifyToken, (req, res) => {
-  // Note: the utilisateur table does not have an is_active column in the current schema.
-  // Return a default is_active = 1 so frontend UI can render status without error.
+  // Note: the `utilisateur` table does not have an `is_active` column in the current schema.
+  // Return a default `is_active` = 1 so frontend UI can render status without error.
   db.query(
     "SELECT id_user AS id, nom AS name, email, date_inscription, 1 AS is_active FROM utilisateur ORDER BY date_inscription DESC",
     (err, results) => {
@@ -202,14 +232,14 @@ app.get("/api/admin/users", verifyToken, (req, res) => {
   );
 });
 
-// Update user status (enable/disable) - operates on utilisateur
+// Update user status (enable/disable) - operates on `utilisateur`
 app.patch("/api/admin/users/:id", verifyToken, (req, res) => {
   const { id } = req.params;
   const { is_active } = req.body;
 
-  // The utilisateur table may not have is_active column in the current schema.
+  // The `utilisateur` table may not have `is_active` column in the current schema.
   // Check for the column first; if it's missing, return success but do not attempt to update
-  // (prevents SQL errors and keeps server stable). Recommend adding is_active column
+  // (prevents SQL errors and keeps server stable). Recommend adding `is_active` column
   // in a future migration to make this persistent.
   db.query("SHOW COLUMNS FROM utilisateur LIKE 'is_active'", (err, cols) => {
     if (err) {
@@ -242,7 +272,7 @@ app.patch("/api/admin/users/:id", verifyToken, (req, res) => {
 app.get("/api/admin/results/stats", verifyToken, (req, res) => {
   const stats = {};
 
-  // Total tests (table resultat)
+  // Total tests (table `resultat`)
   db.query("SELECT COUNT(*) as total FROM resultat", (err, results) => {
     if (err) {
       stats.totalTests = 0;
@@ -440,7 +470,7 @@ app.delete("/api/admin/tips/:id", verifyToken, (req, res) => {
 // Get all resources
 app.get("/api/admin/resources", verifyToken, (req, res) => {
   db.query(
-    "SELECT * FROM resources ORDER BY id_resource DESC",
+    "SELECT * FROM resources ORDER BY id DESC",
     (err, results) => {
       if (err) {
         console.error("Error fetching resources:", err);
@@ -525,7 +555,21 @@ app.delete("/api/admin/resources/:id", verifyToken, (req, res) => {
 
 // ==================== CHALLENGES ROUTES ====================
 
-// Get all challenges (alias id_challenge -> id)
+// Get all challenges (public endpoint - no authentication required)
+app.get("/api/challenges", (req, res) => {
+  db.query(
+    "SELECT id_challenge AS id, titre, description, niveau, duree FROM challenges ORDER BY id_challenge DESC",
+    (err, results) => {
+      if (err) {
+        console.error("Error fetching challenges:", err);
+        return res.status(500).json({ error: "Failed to fetch challenges" });
+      }
+      res.json(results);
+    }
+  );
+});
+
+// Get all challenges (admin endpoint - alias id_challenge -> id)
 app.get("/api/admin/challenges", verifyToken, (req, res) => {
   db.query(
     "SELECT id_challenge AS id, titre, description, niveau, duree FROM challenges ORDER BY id_challenge DESC",
@@ -616,10 +660,9 @@ app.get("/", (req, res) => {
   res.send("API ScrollOff is working 😎 (MySQL only)");
 });
 
-// Start server (configurable via PORT environment variable)
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+// Start server
+app.listen(3000, () => {
+  console.log("🚀 Server running on port 3000");
 });
 
 // Migrate admin passwords to bcrypt (run once)

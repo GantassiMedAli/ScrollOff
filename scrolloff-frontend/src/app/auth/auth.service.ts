@@ -39,6 +39,7 @@ export class AuthService {
       password
     }).pipe(
       tap(response => {
+        console.log('[AuthService] Login successful — token received:', response.token ? `${response.token.slice(0,10)}...` : null);
         this.setToken(response.token);
         this.setAdmin(response.admin);
         this.adminSubject.next(response.admin);
@@ -52,6 +53,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.adminKey);
+    console.log('[AuthService] Token and admin data cleared from localStorage');
     this.adminSubject.next(null);
     this.router.navigate(['/auth/admin-login']);
   }
@@ -60,7 +62,9 @@ export class AuthService {
    * Get current JWT token
    */
   getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+    const token = localStorage.getItem(this.tokenKey);
+    console.debug('[AuthService] getToken ->', token ? `present (${token.slice(0,10)}...)` : 'none');
+    return token;
   }
 
   /**
@@ -98,6 +102,7 @@ export class AuthService {
    */
   private setToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
+    console.log('[AuthService] Token stored in localStorage:', token ? `${token.slice(0,10)}...` : null);
   }
 
   /**

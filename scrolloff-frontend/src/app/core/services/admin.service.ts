@@ -18,9 +18,9 @@ export class AdminService {
    * Get authorization headers
    */
   private getHeaders(): HttpHeaders {
-    const token = this.authService.getToken();
+    // Only set Content-Type here. Authorization header is attached centrally by the AuthInterceptor
+    // (prevents sending `Bearer null` / `Bearer undefined` when token is missing).
     return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
   }
@@ -174,6 +174,20 @@ export class AdminService {
 
   deleteChallenge(id: number): Observable<any> {
     return this.http.delete(`${this.api.baseUrl}/admin/challenges/${id}`, {
+      headers: this.getHeaders()
+    });
+  }
+
+  // ==================== ADMIN MANAGEMENT ====================
+
+  getAdmins(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.api.baseUrl}/admin/admins`, {
+      headers: this.getHeaders()
+    });
+  }
+
+  createAdmin(admin: { username: string; password: string }): Observable<any> {
+    return this.http.post(`${this.api.baseUrl}/admin/admins`, admin, {
       headers: this.getHeaders()
     });
   }

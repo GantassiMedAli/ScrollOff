@@ -1,0 +1,98 @@
+<div class="admin-layout">
+  <app-navbar></app-navbar>
+  <div class="admin-content-wrapper">
+    <app-sidebar></app-sidebar>
+    <div class="page-container">
+      <div class="container-fluid">
+        <div class="mb-4">
+          <h2 class="page-title">Admin Management</h2>
+          <p class="text-muted">View and manage all administrators</p>
+        </div>
+
+        <!-- Add Admin Button -->
+        <div class="mb-3">
+          <button class="btn btn-primary" (click)="toggleAddForm()">
+            <i class="fas fa-plus me-2"></i>
+            {{ showAddForm ? 'Cancel' : 'Add New Admin' }}
+          </button>
+        </div>
+
+        <!-- Add Admin Form -->
+        <div class="card mb-4" *ngIf="showAddForm">
+          <div class="card-body">
+            <h5 class="card-title">Add New Admin</h5>
+            <form [formGroup]="adminForm" (ngSubmit)="onSubmit()">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="username" class="form-label">Username</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    formControlName="username"
+                    [class.is-invalid]="adminForm.get('username')?.invalid && adminForm.get('username')?.touched"
+                  >
+                  <div class="invalid-feedback" *ngIf="adminForm.get('username')?.invalid && adminForm.get('username')?.touched">
+                    Username is required (minimum 3 characters)
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="password" class="form-label">Password</label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    formControlName="password"
+                    [class.is-invalid]="adminForm.get('password')?.invalid && adminForm.get('password')?.touched"
+                  >
+                  <div class="invalid-feedback" *ngIf="adminForm.get('password')?.invalid && adminForm.get('password')?.touched">
+                    Password is required (minimum 6 characters)
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-success" [disabled]="adminForm.invalid">
+                Create Admin
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Admins Table -->
+        <div class="card">
+          <div class="card-body">
+            <div *ngIf="loading" class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+
+            <div *ngIf="!loading">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Username</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let admin of admins">
+                      <td>{{ admin.id }}</td>
+                      <td>{{ admin.username }}</td>
+                    </tr>
+                    <tr *ngIf="admins.length === 0">
+                      <td colspan="2" class="text-center text-muted py-4">
+                        No admins found
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -8,6 +8,7 @@ import { StoriesComponent } from './pages/stories/stories.component';
 import { TipsComponent } from './pages/tips/tips.component';
 import { ResourcesComponent } from './pages/resources/resources.component';
 import { ChallengesComponent } from './pages/challenges/challenges.component';
+import { AdminsComponent } from './pages/admins/admins.component';
 
 const routes: Routes = [
   {
@@ -23,7 +24,7 @@ const routes: Routes = [
   {
     path: 'users',
     component: UsersComponent,
-     canActivate: [AdminGuard]
+    canActivate: [AdminGuard]
   },
   {
     path: 'results',
@@ -48,6 +49,11 @@ const routes: Routes = [
   {
     path: 'challenges',
     component: ChallengesComponent,
+    canActivate: [AdminGuard]
+  },
+  {
+    path: 'admins',
+    component: AdminsComponent,
     canActivate: [AdminGuard]
   }
 ];
