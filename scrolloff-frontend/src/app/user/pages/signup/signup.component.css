@@ -1,2 +1,86 @@
 /* Signup component styles */
+.register-page {
+    background: linear-gradient(180deg, #EFF6FF 0%, #ECFDF5 100%);
+}
+
+/* LEFT CARD */
+.register-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.form-control {
+    border-radius: 6px;
+}
+
+/* MAIN BUTTON */
+.register-btn {
+    background-color: #34D399;
+    color: white;
+    height: 43px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.register-btn:hover {
+    background-color: #2fb889;
+}
+
+/* DIVIDER */
+.divider {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #9CA3AF;
+}
+
+/* SOCIAL BUTTONS */
+.social-btn {
+    border: 1px solid #e5e7eb;
+    background: white;
+    height: 43px;
+    font-weight: 500;
+}
+
+.social-btn.google {
+    color: #111827;
+}
+
+.social-btn.facebook {
+    color: #1877F2;
+}
+
+/* RIGHT SIDE */
+.info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.info-card p {
+    color: #6B7280;
+    margin-bottom: 0;
+}
+
+/* STATS */
+.stats-card {
+    background: #3B82F6;
+    color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.stats-card small {
+    opacity: 0.9;
+}
 

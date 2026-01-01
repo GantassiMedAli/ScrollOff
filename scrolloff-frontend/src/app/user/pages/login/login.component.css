@@ -1,2 +1,14 @@
 /* Login component styles */
+.login-page {
+  background: linear-gradient(to right, #f8fbff, #eef4ff);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-card button {
+  height: 45px;
+}
 
