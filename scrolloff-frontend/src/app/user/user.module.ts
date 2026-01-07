@@ -22,18 +22,18 @@ import { UserFooterComponent } from './components/footer/footer.component';
     UserStoriesComponent,
     UserChallengesComponent,
     AboutComponent,
-    QuizComponent,
     TipsComponent,
     ResourcesComponent,
     LoginComponent,
-    SignupComponent,
-    UserNavbarComponent,
-    UserFooterComponent
+    SignupComponent
   ],
   imports: [
     CommonModule,
     UserRoutingModule,
-    RouterModule
+    RouterModule,
+    QuizComponent,
+    UserNavbarComponent,
+    UserFooterComponent
   ]
 })
 export class UserModule { }

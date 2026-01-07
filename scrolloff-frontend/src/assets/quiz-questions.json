@@ -1,0 +1,228 @@
+{
+    "quiz": {
+      "title": "Social Media Addiction Quiz",
+      "questions": [
+        {
+          "id": 1,
+          "question": "How often do you check social media right after waking up?",
+          "options": [
+            {
+              "text": "Never – I start my day without checking my phone or social networks.",
+              "score": 0
+            },
+            {
+              "text": "Sometimes – I check it only if I have free time in the morning.",
+              "score": 1
+            },
+            {
+              "text": "Often – I usually open social media shortly after waking up.",
+              "score": 2
+            },
+            {
+              "text": "Always – Checking social media is the first thing I do every morning.",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "question": "How much time do you spend daily on social networks?",
+          "options": [
+            {
+              "text": "Less than 1 hour – I use social media occasionally and with control.",
+              "score": 0
+            },
+            {
+              "text": "1–2 hours – I use it regularly but without feeling dependent.",
+              "score": 1
+            },
+            {
+              "text": "2–4 hours – Social media takes a significant part of my day.",
+              "score": 2
+            },
+            {
+              "text": "More than 4 hours – I spend a large portion of my time scrolling.",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "question": "Do you feel anxious when you cannot access social media?",
+          "options": [
+            {
+              "text": "Not at all – I feel calm even without access to social platforms.",
+              "score": 0
+            },
+            {
+              "text": "A little – I notice discomfort but it doesn't affect me much.",
+              "score": 1
+            },
+            {
+              "text": "Quite a lot – I feel stressed when I cannot check my accounts.",
+              "score": 2
+            },
+            {
+              "text": "Extremely anxious – I feel nervous and unsettled without social media.",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "question": "How often do you lose track of time while scrolling?",
+          "options": [
+            {
+              "text": "Never – I always control the time I spend online.",
+              "score": 0
+            },
+            {
+              "text": "Rarely – It happens occasionally but not often.",
+              "score": 1
+            },
+            {
+              "text": "Often – I frequently spend more time than planned.",
+              "score": 2
+            },
+            {
+              "text": "Almost always – I regularly lose hours without noticing.",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "question": "Do you use social media during meals or conversations?",
+          "options": [
+            {
+              "text": "Never – I focus fully on meals and people around me.",
+              "score": 0
+            },
+            {
+              "text": "Sometimes – Only when I feel bored or distracted.",
+              "score": 1
+            },
+            {
+              "text": "Often – I check my phone even during social moments.",
+              "score": 2
+            },
+            {
+              "text": "Always – I cannot stop checking my phone even while talking.",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "question": "How hard is it for you to stop using social media?",
+          "options": [
+            {
+              "text": "Very easy – I can stop anytime without difficulty.",
+              "score": 0
+            },
+            {
+              "text": "Somewhat easy – I stop with little effort.",
+              "score": 1
+            },
+            {
+              "text": "Difficult – I struggle to stop when I start.",
+              "score": 2
+            },
+            {
+              "text": "Almost impossible – I feel unable to stop scrolling.",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "question": "Do you check notifications while working or studying?",
+          "options": [
+            {
+              "text": "Never – I fully concentrate on my tasks.",
+              "score": 0
+            },
+            {
+              "text": "Rarely – Only for urgent notifications.",
+              "score": 1
+            },
+            {
+              "text": "Often – Notifications distract me regularly.",
+              "score": 2
+            },
+            {
+              "text": "All the time – I constantly interrupt my work to check my phone.",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "question": "Do you feel the need to post regularly to feel satisfied?",
+          "options": [
+            {
+              "text": "No – I don't feel the need to post content.",
+              "score": 0
+            },
+            {
+              "text": "Sometimes – I post occasionally for fun.",
+              "score": 1
+            },
+            {
+              "text": "Yes – Posting makes me feel validated.",
+              "score": 2
+            },
+            {
+              "text": "Absolutely – I feel uncomfortable if I don't post often.",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "question": "Have you tried to reduce your social media usage and failed?",
+          "options": [
+            {
+              "text": "Never tried – I already control my usage well.",
+              "score": 0
+            },
+            {
+              "text": "Tried once – I made a small attempt.",
+              "score": 1
+            },
+            {
+              "text": "Several times – I tried but couldn't maintain it.",
+              "score": 2
+            },
+            {
+              "text": "Many times – I repeatedly fail to reduce my usage.",
+              "score": 3
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "question": "How does social media affect your mood?",
+          "options": [
+            {
+              "text": "No effect – My mood is independent of social media.",
+              "score": 0
+            },
+            {
+              "text": "Slight effect – It affects me occasionally.",
+              "score": 1
+            },
+            {
+              "text": "Strong effect – My mood often depends on online interactions.",
+              "score": 2
+            },
+            {
+              "text": "Controls my mood – Likes and comments strongly affect how I feel.",
+              "score": 3
+            }
+          ]
+        }
+      ]
+    }
+  }
+

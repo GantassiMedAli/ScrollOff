@@ -15,14 +15,69 @@ const app = express();
 app.use(cors({ origin: true, credentials: true, allowedHeaders: ['Content-Type', 'Authorization'] }));
 app.use(express.json());
 
-// Test MySQL connection
+// Test MySQL connection and initialize tables if needed
 db.query("SELECT 1", (err) => {
   if (err) {
     console.error("❌ MySQL connection failed:", err);
   } else {
     console.log("✅ MySQL connected successfully");
+    // Initialize tables if they don't exist
+    initializeTables();
   }
 });
+
+// Initialize database tables
+function initializeTables() {
+  // Create resources table if it doesn't exist
+  const createResourcesTable = `
+    CREATE TABLE IF NOT EXISTS resources (
+      id_resource INT AUTO_INCREMENT PRIMARY KEY,
+      titre VARCHAR(255) NOT NULL,
+      description TEXT NOT NULL,
+      lien VARCHAR(500) NOT NULL,
+      type ENUM('Article', 'Video', 'Poster', 'External link') NOT NULL DEFAULT 'Article',
+      date_ajout TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      id_admin INT,
+      FOREIGN KEY (id_admin) REFERENCES admin(id_admin) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `;
+
+  // Create stories table if it doesn't exist
+  const createStoriesTable = `
+    CREATE TABLE IF NOT EXISTS stories (
+      id_story INT AUTO_INCREMENT PRIMARY KEY,
+      titre VARCHAR(255),
+      contenu TEXT NOT NULL,
+      statut ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
+      is_anonymous BOOLEAN DEFAULT FALSE,
+      date_pub TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      id_user INT,
+      FOREIGN KEY (id_user) REFERENCES utilisateur(id_user) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `;
+
+  db.query(createResourcesTable, (err) => {
+    if (err) {
+      // Ignore error if table already exists or foreign key constraint fails (parent table might not exist yet)
+      if (err.code !== 'ER_TABLE_EXISTS_ERROR' && err.code !== 'ER_CANNOT_ADD_FOREIGN') {
+        console.error('Warning: Could not create resources table:', err.message);
+      }
+    } else {
+      console.log('✅ Resources table initialized');
+    }
+  });
+
+  db.query(createStoriesTable, (err) => {
+    if (err) {
+      // Ignore error if table already exists or foreign key constraint fails (parent table might not exist yet)
+      if (err.code !== 'ER_TABLE_EXISTS_ERROR' && err.code !== 'ER_CANNOT_ADD_FOREIGN') {
+        console.error('Warning: Could not create stories table:', err.message);
+      }
+    } else {
+      console.log('✅ Stories table initialized');
+    }
+  });
+}
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || "scrolloff-secret-key-change-in-production";
@@ -336,9 +391,16 @@ app.get("/api/admin/stories", verifyToken, (req, res) => {
   db.query(query, params, (err, results) => {
     if (err) {
       console.error("Error fetching stories:", err);
-      return res.status(500).json({ error: "Failed to fetch stories" });
+      console.error("SQL Error details:", err.message);
+      // Check if table doesn't exist
+      if (err.code === 'ER_NO_SUCH_TABLE') {
+        return res.status(500).json({ 
+          error: "Stories table does not exist. Please run the database initialization script." 
+        });
+      }
+      return res.status(500).json({ error: "Failed to fetch stories: " + err.message });
     }
-    res.json(results);
+    res.json(results || []);
   });
 });
 
@@ -470,13 +532,28 @@ app.delete("/api/admin/tips/:id", verifyToken, (req, res) => {
 // Get all resources
 app.get("/api/admin/resources", verifyToken, (req, res) => {
   db.query(
-    "SELECT * FROM resources ORDER BY id DESC",
+    "SELECT id_resource AS id, titre, description, lien, `type` AS type, date_ajout, id_admin FROM resources ORDER BY id_resource DESC",
     (err, results) => {
       if (err) {
         console.error("Error fetching resources:", err);
-        return res.status(500).json({ error: "Failed to fetch resources" });
+        console.error("SQL Error details:", err.message);
+        // Check if table doesn't exist
+        if (err.code === 'ER_NO_SUCH_TABLE') {
+          return res.status(500).json({ 
+            error: "Resources table does not exist. Please run the database initialization script." 
+          });
+        }
+        return res.status(500).json({ error: "Failed to fetch resources: " + err.message });
       }
-      res.json(results);
+      try {
+        // Log result size for debugging
+        console.log("Resources fetched, count:", Array.isArray(results) ? results.length : 0);
+        return res.status(200).json(Array.isArray(results) ? results : []);
+      } catch (serializationError) {
+        console.error("Error serializing resources response:", serializationError);
+        // Fallback: return an empty array so the frontend still receives a valid JSON
+        return res.status(200).json([]);
+      }
     }
   );
 });
@@ -485,7 +562,7 @@ app.get("/api/admin/resources", verifyToken, (req, res) => {
 app.get("/api/admin/resources/:id", verifyToken, (req, res) => {
   const { id } = req.params;
 
-  db.query("SELECT id_resource AS id, titre, description, lien, type, date_ajout, id_admin FROM resources WHERE id_resource = ?", [id], (err, results) => {
+  db.query("SELECT id_resource AS id, titre, description, lien, `type` AS type, date_ajout, id_admin FROM resources WHERE id_resource = ?", [id], (err, results) => {
     if (err) {
       console.error("Error fetching resource:", err);
       return res.status(500).json({ error: "Failed to fetch resource" });
@@ -493,7 +570,12 @@ app.get("/api/admin/resources/:id", verifyToken, (req, res) => {
     if (results.length === 0) {
       return res.status(404).json({ error: "Resource not found" });
     }
-    res.json(results[0]);
+    try {
+      return res.status(200).json(results[0]);
+    } catch (serializationError) {
+      console.error("Error serializing resource response:", serializationError);
+      return res.status(200).json({});
+    }
   });
 });
 
@@ -506,7 +588,7 @@ app.post("/api/admin/resources", verifyToken, (req, res) => {
   }
 
   db.query(
-    "INSERT INTO resources (titre, description, lien, type) VALUES (?, ?, ?, ?)",
+    "INSERT INTO resources (titre, description, lien, `type`) VALUES (?, ?, ?, ?)",
     [titre, description, lien, type],
     (err, results) => {
       if (err) {
@@ -528,7 +610,7 @@ app.put("/api/admin/resources/:id", verifyToken, (req, res) => {
   }
 
   db.query(
-    "UPDATE resources SET titre = ?, description = ?, lien = ?, type = ? WHERE id_resource = ?",
+    "UPDATE resources SET titre = ?, description = ?, lien = ?, `type` = ? WHERE id_resource = ?",
     [titre, description, lien, type, id],
     (err, results) => {
       if (err) {
