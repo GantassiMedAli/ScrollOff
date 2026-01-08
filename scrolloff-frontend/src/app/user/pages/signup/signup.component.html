@@ -12,28 +12,40 @@
             Join thousands of people building better digital habits
           </p>
 
-          <form>
+          <form [formGroup]="registerForm" (ngSubmit)="submit()">
+            <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+            <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+
             <div class="mb-3">
               <label class="form-label">Full Name</label>
-              <input type="text" class="form-control" placeholder="Enter your full name">
+              <input formControlName="nom" type="text" class="form-control" placeholder="Enter your full name">
+              <div *ngIf="registerForm.get('nom')?.invalid && registerForm.get('nom')?.touched" class="text-danger small">
+                Name is required
+              </div>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Email Address</label>
-              <input type="email" class="form-control" placeholder="your.email@example.com">
+              <input formControlName="email" type="email" class="form-control" placeholder="your.email@example.com">
+              <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-danger small">
+                Please enter a valid email
+              </div>
             </div>
 
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="form-label">Password</label>
-                <input type="password" class="form-control" placeholder="Create a password">
+                <input formControlName="password" type="password" class="form-control" placeholder="Create a password">
+                <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-danger small">
+                  Password is required (min 6 chars)
+                </div>
               </div>
 
               <div class="col-md-6 mb-3">
                 <label class="form-label">Age</label>
-                <select class="form-control">
-                  <option>18+</option>
-                  <option>Under 18</option>
+                <select formControlName="age" class="form-control">
+                  <option value="18+">18+</option>
+                  <option value="under-18">Under 18</option>
                 </select>
               </div>
             </div>
@@ -46,23 +58,23 @@
               </label>
             </div>
 
-            <button class="btn register-btn w-100 mb-3">
-              Create Account
+            <button class="btn register-btn w-100 mb-3" [disabled]="loading">
+              {{ loading ? 'Creating account...' : 'Create Account' }}
             </button>
 
             <div class="divider my-3">OR</div>
 
-            <button class="btn social-btn google w-100 mb-2">
+            <button class="btn social-btn google w-100 mb-2" disabled>
               Sign up with Google
             </button>
 
-            <button class="btn social-btn facebook w-100">
+            <button class="btn social-btn facebook w-100" disabled>
               Sign up with Facebook
             </button>
 
             <p class="text-center mt-3 small">
               Already have an account?
-              <a routerLink="/login">Sign in</a>
+              <a routerLink="/user/login">Sign in</a>
             </p>
           </form>
         </div>

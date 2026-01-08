@@ -36,15 +36,23 @@
           Enter your credentials to access your account
         </p>
 
-        <form>
+        <form [formGroup]="loginForm" (ngSubmit)="submit()">
+          <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
           <div class="mb-3">
             <label class="form-label">Email Address</label>
-            <input type="email" class="form-control" placeholder="your.email@example.com">
+            <input formControlName="email" type="email" class="form-control" placeholder="your.email@example.com">
+            <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-danger small">
+              Please enter a valid email
+            </div>
           </div>
 
           <div class="mb-3">
             <label class="form-label">Password</label>
-            <input type="password" class="form-control" placeholder="Enter your password">
+            <input formControlName="password" type="password" class="form-control" placeholder="Enter your password">
+            <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-danger small">
+              Password is required (min 6 chars)
+            </div>
           </div>
 
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -57,8 +65,8 @@
             <a href="#" class="text-primary small">Forgot password?</a>
           </div>
 
-          <button class="btn btn-primary w-100 mb-3">
-            Sign In
+          <button class="btn btn-primary w-100 mb-3" [disabled]="loading">
+            {{ loading ? 'Signing in...' : 'Sign In' }}
           </button>
 
           <div class="text-center text-muted my-2">OR</div>
@@ -73,7 +81,7 @@
 
           <p class="text-center small">
             Don’t have an account?
-            <a href="#" class="text-primary">Create account</a>
+            <a routerLink="/user/signup" class="text-primary">Create account</a>
           </p>
         </form>
 

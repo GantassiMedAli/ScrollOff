@@ -15,6 +15,14 @@ const app = express();
 app.use(cors({ origin: true, credentials: true, allowedHeaders: ['Content-Type', 'Authorization'] }));
 app.use(express.json());
 
+// Temporary logger for auth routes to help debug 404s
+app.use('/api/auth', (req, res, next) => {
+  console.log('[AUTH REQUEST]', req.method, req.path, 'Content-Type:', req.headers['content-type']);
+  // Avoid logging bodies for large or binary requests, but log for debugging here
+  try { console.log('[AUTH REQUEST BODY]', req.body); } catch (e) { console.log('Body log error', e.message); }
+  next();
+});
+
 // Test MySQL connection
 db.query("SELECT 1", (err) => {
   if (err) {
@@ -116,6 +124,92 @@ app.post("/api/admin/login", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+// ==================== USER SIGN UP ====================
+app.post("/api/auth/register", async (req, res) => {
+  const { nom, email, password } = req.body;
+
+  if (!nom || !email || !password) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  try {
+    // Check if email exists
+    db.query(
+      "SELECT * FROM utilisateur WHERE email = ?",
+      [email],
+      async (err, results) => {
+        if (err) return res.status(500).json({ error: "Database error" });
+
+        if (results.length > 0) {
+          return res.status(409).json({ error: "Email already exists" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        db.query(
+          "INSERT INTO utilisateur (nom, email, mot_de_passe, date_inscription) VALUES (?, ?, ?, NOW())",
+          [nom, email, hashedPassword],
+          (err, result) => {
+            if (err) return res.status(500).json({ error: "Failed to register" });
+
+            res.status(201).json({
+              message: "User registered successfully",
+              id: result.insertId
+            });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ==================== USER LOGIN ====================
+app.post("/api/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password required" });
+  }
+
+  db.query(
+    "SELECT * FROM utilisateur WHERE email = ?",
+    [email],
+    async (err, results) => {
+      if (err) return res.status(500).json({ error: "Database error" });
+
+      if (results.length === 0) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      const user = results[0];
+      const isValid = await bcrypt.compare(password, user.mot_de_passe);
+
+      if (!isValid) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      const token = jwt.sign(
+        { id: user.id_user, email: user.email },
+        JWT_SECRET,
+        { expiresIn: "24h" }
+      );
+
+      res.json({
+        token,
+        user: {
+          id: user.id_user,
+          nom: user.nom,
+          email: user.email
+        }
+      });
+    }
+  );
+});
+
+
 
 // ==================== STATISTICS ====================
 
