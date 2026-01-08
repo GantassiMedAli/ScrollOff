@@ -1,7 +1,217 @@
 <app-user-navbar></app-user-navbar>
-<div class="container py-5 mt-5">
-  <h1 class="mb-4">Quiz</h1>
-  <p class="text-muted">Quiz content will be displayed here.</p>
-</div>
-<app-user-footer></app-user-footer>
 
+@if (!showResults()) {
+  <!-- Quiz Section -->
+  <div class="quiz-container">
+    <div class="container py-5">
+      <!-- Header -->
+      <div class="quiz-header text-center mb-5">
+        <h1 class="quiz-title">Discover Your Digital Wellness Score</h1>
+        <p class="quiz-subtitle">
+          Answer 10 simple questions to understand your relationship with social media and get
+          personalized recommendations.
+        </p>
+      </div>
+
+      <!-- Progress Bar Section -->
+      <div class="progress-section mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="progress-text">Question {{ currentQuestionIndex() + 1 }} of 10</span>
+          <span class="progress-text">{{ progressPercentage() | number: '1.0-0' }}% Complete</span>
+        </div>
+        <div class="progress-bar-container">
+          <div
+            class="progress-bar-fill"
+            [style.width.%]="progressPercentage()"
+            [style.transition]="'width 0.3s ease'"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Question Card -->
+      <div class="question-card">
+        <div class="question-label">QUESTION {{ currentQuestionIndex() + 1 }}</div>
+        <h2 class="question-text">{{ currentQuestion()?.question }}</h2>
+
+        <!-- Answer Options -->
+        <div class="answers-container">
+          @for (option of currentQuestion()?.options; track option.text; let i = $index) {
+            <label
+              class="answer-option"
+              [class.selected]="selectedAnswer() === i"
+            >
+              <input
+                type="radio"
+                name="answer"
+                [value]="i"
+                [checked]="selectedAnswer() === i"
+                (change)="selectAnswer(i)"
+              />
+              <span class="answer-text">{{ option.text }}</span>
+            </label>
+          }
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="navigation-buttons">
+          <button
+            type="button"
+            class="btn btn-previous"
+            [disabled]="isFirstQuestion()"
+            (click)="previousQuestion()"
+          >
+            <i class="fas fa-arrow-left"></i>
+            Previous
+          </button>
+          @if (isLastQuestion()) {
+            <button
+              type="button"
+              class="btn btn-next"
+              [disabled]="!allQuestionsAnswered()"
+              (click)="finishQuiz()"
+            >
+              Finish
+              <i class="fas fa-check"></i>
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="btn btn-next"
+              [disabled]="selectedAnswer() === null"
+              (click)="nextQuestion()"
+            >
+              Next
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <!-- Results Section -->
+  <div class="results-container">
+    <div class="container py-5">
+      <!-- Results Header -->
+      <div class="results-header text-center mb-5">
+        <h1 class="results-title">Your Digital Wellness Score</h1>
+        <p class="results-subtitle">
+          Here's what your answers reveal about your social media habits
+        </p>
+      </div>
+
+      <!-- Score Display Card -->
+      <div class="score-card">
+        <div class="score-circle">
+          <svg class="score-circle-svg" viewBox="0 0 120 120">
+            <circle
+              class="score-circle-bg"
+              cx="60"
+              cy="60"
+              r="54"
+              fill="none"
+              stroke="#E0F2FE"
+              stroke-width="8"
+            ></circle>
+            <circle
+              class="score-circle-fill"
+              cx="60"
+              cy="60"
+              r="54"
+              fill="none"
+              stroke="#007BFF"
+              stroke-width="8"
+              [attr.stroke-dasharray]="339.292"
+              [attr.stroke-dashoffset]="339.292 - (339.292 * result()!.score) / 10"
+              transform="rotate(-90 60 60)"
+              style="transition: stroke-dashoffset 1s ease;"
+            ></circle>
+          </svg>
+          <div class="score-content">
+            <div class="score-number">{{ result()!.score }}</div>
+            <div class="score-total">/10</div>
+          </div>
+        </div>
+        <div class="score-label">{{ result()!.category }} Usage</div>
+      </div>
+
+      <!-- Score Interpretation -->
+      <div class="interpretation-section text-center mb-5">
+        <h2 class="interpretation-title">{{ result()!.message }}</h2>
+        <p class="interpretation-description">{{ result()!.description }}</p>
+
+        <!-- Personalized Recommendation -->
+        <div class="recommendation-box">
+          <div class="recommendation-label">Personalized Recommendation</div>
+          <p class="recommendation-text">
+            Based on your responses, we recommend starting with our
+            <a href="/user/tips" class="recommendation-link">digital wellness tips</a> to help you
+            build healthier habits.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="tips-section">
+        <h2 class="tips-title text-center mb-4">Tips to Improve Your Score</h2>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="tip-card">
+              <div class="tip-icon">
+                <i class="fas fa-bell-slash"></i>
+              </div>
+              <h5 class="tip-title">Turn Off Notifications</h5>
+              <p class="tip-description">
+                Disable non-essential app notifications to reduce the urge to constantly check your
+                phone.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="tip-card">
+              <div class="tip-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <h5 class="tip-title">Set Time Limits</h5>
+              <p class="tip-description">
+                Use built-in app timers to limit your daily social media usage to 30-60 minutes.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="tip-card">
+              <div class="tip-icon">
+                <i class="fas fa-home"></i>
+              </div>
+              <h5 class="tip-title">Create Phone-Free Zones</h5>
+              <p class="tip-description">
+                Designate areas like your bedroom and dining table as phone-free spaces.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Call to Action -->
+      <div class="cta-section">
+        <div class="cta-card">
+          <h2 class="cta-title">Ready to Take Action?</h2>
+          <p class="cta-description">
+            Explore our complete library of tips and join challenges designed to help you build
+            lasting digital wellness habits.
+          </p>
+          <a routerLink="/user/tips" class="btn btn-cta">View All Tips</a>
+        </div>
+      </div>
+
+      <!-- Restart Button -->
+      <div class="text-center mt-4">
+        <button type="button" class="btn btn-outline-primary" (click)="restartQuiz()">
+          Retake Quiz
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<app-user-footer></app-user-footer>
