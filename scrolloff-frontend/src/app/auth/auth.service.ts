@@ -39,8 +39,8 @@ export class AuthService {
       password
     }).pipe(
       tap(response => {
-        console.log('[AuthService] Login successful — token received:', response.token ? `${response.token.slice(0,10)}...` : null);
-        this.setToken(response.token);
+        console.log('[AuthService] Login successful — token received:', response.token ? `${response.token.slice(0,10)}...` : null);        // Remove any old token first to avoid race with expired tokens
+        try { localStorage.removeItem(this.tokenKey); } catch(e) { /* ignore */ }        this.setToken(response.token);
         this.setAdmin(response.admin);
         this.adminSubject.next(response.admin);
       })
@@ -55,7 +55,15 @@ export class AuthService {
     localStorage.removeItem(this.adminKey);
     console.log('[AuthService] Token and admin data cleared from localStorage');
     this.adminSubject.next(null);
-    this.router.navigate(['/auth/admin-login']);
+    // Only navigate if we're not already at the admin login to prevent navigation loops
+    try {
+      if (!this.router.url.startsWith('/auth/admin-login')) {
+        this.router.navigate(['/auth/admin-login']);
+      }
+    } catch (e) {
+      // Router may not be available in some test environments
+      console.debug('[AuthService] logout navigate skipped:', e && e.message);
+    }
   }
 
   /**

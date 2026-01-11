@@ -18,11 +18,14 @@ export class AdminService {
    * Get authorization headers
    */
   private getHeaders(): HttpHeaders {
-    // Only set Content-Type here. Authorization header is attached centrally by the AuthInterceptor
-    // (prevents sending `Bearer null` / `Bearer undefined` when token is missing).
-    return new HttpHeaders({
+    const headers: { [key: string]: string } = {
       'Content-Type': 'application/json'
-    });
+    };
+    const token = this.authService.getToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    return new HttpHeaders(headers);
   }
 
   // ==================== STATISTICS ====================

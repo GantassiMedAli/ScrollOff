@@ -3,12 +3,13 @@ import { AdminService } from '../../../core/services';
 
 interface Story {
   id: number;
-  titre: string;
+  titre?: string;
   contenu: string;
   statut: 'pending' | 'approved' | 'rejected';
   is_anonymous: boolean;
   date_creation: string;
   id_user?: number;
+  id_admin?: number;
 }
 
 @Component({
@@ -43,12 +44,18 @@ export class StoriesComponent implements OnInit {
     this.loading = true;
     this.adminService.getStories().subscribe({
       next: (data) => {
-        this.stories = data || [];
+        const raw = data || [];
+        // Ensure we provide a safe `titre` fallback for UI consumption (no DB `titre` column on stories)
+        this.stories = raw.map((s: any) => ({
+          ...s,
+          titre: s.titre || (s.contenu ? (s.contenu.length > 80 ? s.contenu.slice(0,80) + '...' : s.contenu) : '')
+        }));
         this.filterStories();
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading stories:', error);
+        // More verbose error logging so we can see server status and body
+        console.error('Error loading stories:', error && error.status, error && (error.error || error.message));
         this.stories = [];
         this.filterStories();
         this.loading = false;
@@ -96,7 +103,7 @@ export class StoriesComponent implements OnInit {
         this.filterStories();
       },
       error: (error) => {
-        console.error('Error approving story:', error);
+        console.error('Error approving story:', error && error.status, error && (error.error || error.message));
         alert('Failed to approve story');
       }
     });
@@ -109,7 +116,7 @@ export class StoriesComponent implements OnInit {
         this.filterStories();
       },
       error: (error) => {
-        console.error('Error rejecting story:', error);
+        console.error('Error rejecting story:', error && error.status, error && (error.error || error.message));
         alert('Failed to reject story');
       }
     });
@@ -123,7 +130,7 @@ export class StoriesComponent implements OnInit {
           this.filterStories();
         },
         error: (error) => {
-          console.error('Error deleting story:', error);
+          console.error('Error deleting story:', error && error.status, error && (error.error || error.message));
           alert('Failed to delete story');
         }
       });

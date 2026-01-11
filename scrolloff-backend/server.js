@@ -51,21 +51,29 @@ db.query("SELECT 1", (err) => {
   }
 });
 
+// Global process-level handlers to catch unexpected errors and log them (helps debug crashes)
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err && err.stack ? err.stack : err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection:', reason && reason.stack ? reason.stack : reason);
+});
+
 // Initialize database tables
 function initializeTables() {
   // Create resources table if it doesn't exist
   const createResourcesTable = `
-    CREATE TABLE IF NOT EXISTS resources (
-      id_resource INT AUTO_INCREMENT PRIMARY KEY,
-      titre VARCHAR(255) NOT NULL,
-      description TEXT NOT NULL,
-      lien VARCHAR(500) NOT NULL,
-      type ENUM('Article', 'Video', 'Poster', 'External link') NOT NULL DEFAULT 'Article',
-      date_ajout TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      id_admin INT,
-      FOREIGN KEY (id_admin) REFERENCES admin(id_admin) ON DELETE SET NULL
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `;
+  CREATE TABLE IF NOT EXISTS resources (
+    id_resource INT AUTO_INCREMENT PRIMARY KEY,
+    titre VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    lien VARCHAR(500) NOT NULL,
+    type ENUM('Article', 'Video', 'Poster', 'External link') NOT NULL DEFAULT 'Article',
+    date_ajout TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_admin INT,
+    FOREIGN KEY (id_admin) REFERENCES admin(id_admin) ON DELETE SET NULL
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+`;
 
   // Create stories table if it doesn't exist
   const createStoriesTable = `
@@ -106,30 +114,67 @@ function initializeTables() {
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || "scrolloff-secret-key-change-in-production";
+console.info('[JWT] JWT_SECRET loaded from env:', !!process.env.JWT_SECRET);
 
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.authorization || req.headers['x-access-token'];
-
-  if (!authHeader) {
-    return res.status(401).json({ error: "No token provided" });
-  }
-
-  // Support both "Bearer <token>" and raw token strings
-  const token = typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
-    ? authHeader.split(' ')[1]
-    : authHeader;
-
-  if (!token || token === 'null' || token === 'undefined') {
-    return res.status(401).json({ error: "No token provided" });
-  }
-
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    console.debug('[verifyToken] start - url:', req.originalUrl);
+
+    const authHeader = req.headers && (req.headers.authorization || req.headers['x-access-token']);
+
+    if (!authHeader) {
+      console.warn('[verifyToken] missing Authorization header - url:', req.originalUrl);
+      return res.status(401).json({ error: "No token provided", type: 'auth', url: req.originalUrl });
+    }
+
+    // Support both "Bearer <token>" and raw token strings
+    const token = typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
+      ? authHeader.split(' ')[1]
+      : authHeader;
+
+    if (!token || token === 'null' || token === 'undefined') {
+      console.warn('[verifyToken] token empty or invalid string:', token, 'url:', req.originalUrl);
+      return res.status(401).json({ error: "No token provided", type: 'auth', url: req.originalUrl });
+    }
+
+    let decoded;
+
+    // Decode without verification to inspect exp/iat for debugging (safe - does not validate signature)
+    try {
+      const decodedUnsafe = jwt.decode(token);
+      if (decodedUnsafe) {
+        const exp = decodedUnsafe.exp;
+        const iat = decodedUnsafe.iat;
+        console.info('[verifyToken] token decode -> iat:', iat, 'exp:', exp, 'expDate:', exp ? new Date(exp * 1000).toISOString() : 'n/a', 'serverNow:', new Date().toISOString(), 'url:', req.originalUrl);
+      } else {
+        console.debug('[verifyToken] token decode returned null', 'url:', req.originalUrl);
+      }
+    } catch (e) {
+      console.debug('[verifyToken] token decode error:', e && e.message ? e.message : e, 'url:', req.originalUrl);
+    }
+
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+      console.info('[verifyToken] token valid for adminId:', decoded && decoded.id, 'url:', req.originalUrl);
+    } catch (err) {
+      // If token is expired, return a clear 401
+      if (err && err.name === 'TokenExpiredError') {
+        // Also attempt to show decoded exp for extra context
+        const decodedUnsafe = jwt.decode(token) || {};
+        const exp = decodedUnsafe.exp;
+        console.warn('[verifyToken] token expired -> exp:', exp, 'expDate:', exp ? new Date(exp * 1000).toISOString() : 'n/a', 'serverNow:', new Date().toISOString(), 'url:', req.originalUrl);
+        return res.status(401).json({ error: "Token expired or invalid" });
+      }
+      console.debug('[verifyToken] JWT verification failed:', (err && err.message) || err, 'url:', req.originalUrl);
+      return res.status(401).json({ error: "Token expired or invalid" });
+    }
+
     req.adminId = decoded.id;
+    console.info('[verifyToken] success for adminId:', req.adminId, 'url:', req.originalUrl);
     next();
-  } catch (error) {
-    console.debug('JWT verification failed:', error.message);
+  } catch (err) {
+    console.error('[verifyToken] unexpected error:', err && err.stack ? err.stack : err);
     return res.status(401).json({ error: "Invalid token" });
   }
 };
@@ -182,7 +227,7 @@ app.post("/api/admin/login", async (req, res) => {
         const token = jwt.sign(
           { id: admin.id_admin, username: admin.username },
           JWT_SECRET,
-          { expiresIn: "24h" }
+          { expiresIn: "30d" }
         );
 
         res.json({
@@ -269,7 +314,7 @@ app.post("/api/auth/login", async (req, res) => {
       const token = jwt.sign(
         { id: user.id_user, email: user.email },
         JWT_SECRET,
-        { expiresIn: "24h" }
+        { expiresIn: "30d" }
       );
 
       res.json({
@@ -488,11 +533,13 @@ app.get("/api/admin/results/stats", verifyToken, (req, res) => {
 
 // ==================== STORIES ROUTES ====================
 
-// Get all stories with filters (map DB: id_story -> id, date_pub -> date_creation, add titre fallback)
+// Get all stories with filters (map DB: id_story -> id, date_pub -> date_creation; compute titre fallback server-side)
 app.get("/api/admin/stories", verifyToken, (req, res) => {
   const { statut } = req.query;
+  console.log('[ROUTE] GET /api/admin/stories - entered, statut =', statut);
 
-  let query = "SELECT id_story AS id, COALESCE(titre, '') AS titre, contenu, statut, is_anonymous, date_pub AS date_creation, id_user FROM stories";
+  // Match DB schema exactly (no `titre` column in stories)
+  let query = "SELECT id_story AS id, contenu, statut, is_anonymous, date_pub AS date_creation, id_user, id_admin FROM stories";
   const params = [];
 
   if (statut) {
@@ -502,21 +549,49 @@ app.get("/api/admin/stories", verifyToken, (req, res) => {
 
   query += " ORDER BY date_pub DESC";
 
-  db.query(query, params, (err, results) => {
-    if (err) {
-      console.error("Error fetching stories:", err);
-      console.error("SQL Error details:", err.message);
-      // Check if table doesn't exist
-      if (err.code === 'ER_NO_SUCH_TABLE') {
-        return res.status(500).json({ 
-          error: "Stories table does not exist. Please run the database initialization script." 
-        });
+  try {
+    db.query(query, params, (err, results) => {
+      if (err) {
+        // More explicit SQL error logging
+        console.error("SQL ERROR fetching stories:", err, { code: err && err.code, sqlMessage: err && err.sqlMessage });
+        // Check if table doesn't exist
+        if (err && err.code === 'ER_NO_SUCH_TABLE') {
+          return res.status(500).json({ 
+            error: "Stories table does not exist. Please run the database initialization script.",
+            type: 'sql',
+            code: err.code
+          });
+        }
+        return res.status(500).json({ error: "Failed to fetch stories", details: err && (err.message || err.sqlMessage), code: err && err.code });
       }
-      return res.status(500).json({ error: "Failed to fetch stories: " + err.message });
-    }
-    res.json(results || []);
-  });
+
+      try {
+        const mapped = (results || []).map(r => ({
+          id: r.id,
+          contenu: r.contenu,
+          statut: r.statut,
+          is_anonymous: !!r.is_anonymous,
+          date_creation: r.date_creation || r.date_pub,
+          id_user: r.id_user,
+          id_admin: r.id_admin,
+          // No `titre` column in DB: provide a safe fallback for client display
+          titre: r.titre || (r.contenu ? (r.contenu.length > 80 ? r.contenu.slice(0,80) + '...' : r.contenu) : '')
+        }));
+
+        console.log('[ROUTE] GET /api/admin/stories - fetched, count =', mapped.length);
+        return res.json(mapped);
+      } catch (serializationError) {
+        console.error("Error serializing stories response:", serializationError);
+        return res.status(200).json([]);
+      }
+    });
+  } catch (outerErr) {
+    console.error('[ROUTE] GET /api/admin/stories - unexpected error before db.query:', outerErr);
+    return res.status(500).json({ error: "Server error when fetching stories" });
+  }
 });
+
+console.log('Registered route: GET /api/admin/stories');
 
 // Update story status (approve/reject)
 app.patch("/api/admin/stories/:id", verifyToken, (req, res) => {
