@@ -1,7 +1,54 @@
 <app-user-navbar></app-user-navbar>
-<div class="container py-5 mt-5">
-  <h1 class="mb-4">Resources</h1>
-  <p class="text-muted">Resources content will be displayed here.</p>
-</div>
-<app-user-footer></app-user-footer>
 
+<section class="resources-hero py-5 text-center text-white mt-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <h1 class="display-4 fw-bold mb-3">Resources</h1>
+        <p class="lead">Trusted videos, podcasts, guides, and tools to help you on your digital wellness journey</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="resources-content py-5">
+  <div class="container">
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <div *ngIf="error" class="alert alert-warning" role="alert">
+      {{ error }}
+    </div>
+
+    <div *ngIf="!loading && !error && resources.length === 0" class="text-center py-5">
+      <p class="text-muted">No resources available at the moment. Check back soon!</p>
+    </div>
+
+    <div *ngIf="!loading && !error && resources.length > 0" class="row g-4">
+      <div class="col-md-6 col-lg-4" *ngFor="let resource of resources; let i = index">
+        <div class="resource-card border-card fade-in" [style.animation-delay]="(i * 0.1) + 's'">
+          <div class="d-flex align-items-center mb-3">
+            <span class="type-badge" [ngClass]="getTypeClass(resource.type)">
+              <i class="fas" [ngClass]="getTypeIcon(resource.type)"></i>
+              <span class="ms-2">{{ resource.type }}</span>
+            </span>
+          </div>
+          <h5 class="fw-bold mb-3">{{ resource.titre }}</h5>
+          <p class="text-muted mb-4">{{ resource.description }}</p>
+          <button 
+            class="btn btn-primary btn-sm w-100" 
+            (click)="openResource(resource.lien)"
+            [disabled]="!resource.lien">
+            <i class="fas fa-external-link-alt me-2"></i>
+            Open Resource
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<app-user-footer></app-user-footer>

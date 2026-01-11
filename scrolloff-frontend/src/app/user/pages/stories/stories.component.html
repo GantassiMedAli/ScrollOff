@@ -1,14 +1,47 @@
 <app-user-navbar></app-user-navbar>
-<div class="container py-5 mt-5">
-  <h1>Stories</h1>
-  <p>Stories page placeholder</p>
-</div>
+
+<section class="stories-hero py-5 text-center text-white mt-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <h1 class="display-4 fw-bold mb-3">Success Stories</h1>
+        <p class="lead">Real experiences from people who have transformed their relationship with technology</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stories-content py-5">
+  <div class="container">
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <div *ngIf="error" class="alert alert-warning" role="alert">
+      {{ error }}
+    </div>
+
+    <div *ngIf="!loading && !error && stories.length === 0" class="text-center py-5">
+      <p class="text-muted">No stories available at the moment. Check back soon!</p>
+    </div>
+
+    <div *ngIf="!loading && !error && stories.length > 0" class="row g-4">
+      <div class="col-md-6 col-lg-4" *ngFor="let story of stories; let i = index">
+        <div class="story-card border-card testimonial-card fade-in" [style.animation-delay]="(i * 0.1) + 's'">
+          <div class="story-icon mb-3">
+            <i class="fas fa-quote-left"></i>
+          </div>
+          <p class="story-content">{{ story.contenu }}</p>
+          <div class="story-footer mt-4 pt-3 border-top">
+            <h6 class="fw-bold mb-1">{{ getAuthorName(story) }}</h6>
+            <small class="text-muted">{{ formatDate(story.date_creation) }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <app-user-footer></app-user-footer>
-
-
-
-
-
-
-
-

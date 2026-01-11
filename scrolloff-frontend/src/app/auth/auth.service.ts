@@ -62,7 +62,8 @@ export class AuthService {
       }
     } catch (e) {
       // Router may not be available in some test environments
-      console.debug('[AuthService] logout navigate skipped:', e && e.message);
+      const errMsg = e instanceof Error ? e.message : String(e);
+      console.debug('[AuthService] logout navigate skipped:', errMsg);
     }
   }
 

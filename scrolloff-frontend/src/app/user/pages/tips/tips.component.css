@@ -1,2 +1,70 @@
-/* Tips component styles */
+.tips-hero {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border-radius: 0 0 40px 40px;
+}
 
+.tips-content {
+  background: #F9FAFB;
+  min-height: 60vh;
+}
+
+.tip-card {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.level-badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.level-low {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.level-medium {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.level-high {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.border-card {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 2.2rem 1.5rem;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.border-card:hover {
+  border-color: #007bff;
+  box-shadow: 0 10px 25px rgba(0, 123, 255, 0.08);
+  transform: translateY(-4px);
+}
+
+.border-card h5 {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #212529;
+}

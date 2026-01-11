@@ -17,8 +17,14 @@ export class ChallengeService {
    * Get all challenges (public endpoint)
    */
   getChallenges(): Observable<Challenge[]> {
-    // Using public endpoint - if it doesn't exist, backend needs to add /api/challenges endpoint
     return this.http.get<Challenge[]>(`${this.api.baseUrl}/challenges`);
+  }
+
+  /**
+   * Get challenge by ID (public endpoint)
+   */
+  getChallengeById(id: number): Observable<Challenge> {
+    return this.http.get<Challenge>(`${this.api.baseUrl}/challenges/${id}`);
   }
 }
 

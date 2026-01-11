@@ -31,9 +31,39 @@
           <a class="nav-link" routerLink="/user/resources" routerLinkActive="active">Resources</a>
         </li>
       </ul>
-      <div class="d-flex">
-        <a class="btn btn-primary btn-nav me-2" routerLink="/user/login">Login</a>
-        <a class="btn btn-outline-primary btn-nav" routerLink="/user/signup">Sign Up</a>
+      <div class="d-flex align-items-center">
+        <!-- Show Login/Signup when NOT authenticated -->
+        <div *ngIf="!isAuthenticated" class="d-flex">
+          <a class="btn btn-primary btn-nav me-2" routerLink="/user/login">Login</a>
+          <a class="btn btn-outline-primary btn-nav" routerLink="/user/signup">Sign Up</a>
+        </div>
+        
+        <!-- Show Profile dropdown when authenticated -->
+        <div *ngIf="isAuthenticated" class="profile-dropdown position-relative">
+          <button 
+            class="btn btn-link profile-btn p-0" 
+            (click)="toggleDropdown()"
+            type="button"
+            aria-expanded="false">
+            <i class="fas fa-user-circle fa-2x text-primary"></i>
+          </button>
+          <div 
+            class="dropdown-menu dropdown-menu-end" 
+            [class.show]="showDropdown"
+            *ngIf="showDropdown">
+            <div class="dropdown-header">
+              <strong>{{ currentUser?.nom || 'User' }}</strong>
+              <small class="d-block text-muted">{{ currentUser?.email }}</small>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" (click)="goToProfile(); $event.preventDefault()" href="#">
+              <i class="fas fa-user me-2"></i>Profile
+            </a>
+            <a class="dropdown-item text-danger" (click)="logout(); $event.preventDefault()" href="#">
+              <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>

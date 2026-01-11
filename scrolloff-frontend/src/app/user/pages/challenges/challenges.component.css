@@ -1,12 +1,197 @@
-/* User challenges component styles */
+.challenges-hero {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border-radius: 0 0 40px 40px;
+}
 
+.challenges-content {
+  background: #F9FAFB;
+  min-height: 60vh;
+}
 
+.challenge-card {
+  cursor: pointer;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards;
+}
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
+.challenge-gradient-card {
+  width: 100%;
+  height: auto;
+  background: linear-gradient(180deg, #EFF6FF 0%, #ECFDF5 100%);
+  border: 1px solid #d1fae5;
+  border-radius: 12px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
 
+.challenge-gradient-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 123, 255, 0.15);
+  border-color: #007bff;
+}
 
+.level-badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
+.level-low {
+  background-color: #d4edda;
+  color: #155724;
+}
 
+.level-medium {
+  background-color: #fff3cd;
+  color: #856404;
+}
 
+.level-high {
+  background-color: #f8d7da;
+  color: #721c24;
+}
 
+.duration-badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
 
+.challenge-btn {
+  background-color: #34D399;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: all 0.25s ease;
+}
+
+.challenge-btn:hover {
+  background-color: #2fb889;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(52, 211, 153, 0.3);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  animation: fadeIn 0.3s ease;
+  padding: 1rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  margin: 0;
+  font-weight: 600;
+  color: #212529;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-close:hover {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.challenge-join-btn {
+  background-color: #34D399;
+  border-color: #34D399;
+  color: white;
+}
+
+.challenge-join-btn:hover {
+  background-color: #2fb889;
+  border-color: #2fb889;
+}
