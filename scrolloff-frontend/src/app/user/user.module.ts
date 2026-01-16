@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { UserRoutingModule } from './user-routing.module';
 
@@ -15,6 +15,8 @@ import { TipsComponent } from './pages/tips/tips.component';
 import { ResourcesComponent } from './pages/resources/resources.component';
 import { LoginComponent } from './pages/login/login.component';
 import { SignupComponent } from './pages/signup/signup.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { PrivacyComponent } from './pages/privacy/privacy.component';
 
 import { UserNavbarComponent } from './components/navbar/navbar.component';
 import { UserFooterComponent } from './components/footer/footer.component';
@@ -30,6 +32,8 @@ import { UserFooterComponent } from './components/footer/footer.component';
     ResourcesComponent,
     LoginComponent,
     SignupComponent,
+    ProfileComponent,
+    PrivacyComponent,
     
   ],
  imports: [
@@ -37,6 +41,7 @@ import { UserFooterComponent } from './components/footer/footer.component';
   UserRoutingModule,
   RouterModule,
   ReactiveFormsModule,
+  FormsModule,
 
   // Standalone Components
   QuizComponent,

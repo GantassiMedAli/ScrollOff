@@ -63,5 +63,21 @@ router.get('/resources', (req, res) => {
   );
 });
 
-console.log('Loaded publicRoutes (stories,tips,resources)');
+// Get challenges (public)
+router.get('/challenges', (req, res) => {
+  db.query(
+    "SELECT id_challenge AS id, titre, description, niveau, date_creation FROM challenges ORDER BY id_challenge DESC",
+    (err, results) => {
+      if (err) {
+        console.error('[publicRoutes] SQL error fetching challenges:', err && err.message ? err.message : err);
+        return res.json([
+          { id: 1, titre: '7-Day Screen-Free Challenge', description: 'Take a break from screens', niveau: 'medium', date_creation: new Date().toISOString() }
+        ]);
+      }
+      res.json(results || []);
+    }
+  );
+});
+
+console.log('Loaded publicRoutes (stories,tips,resources,challenges)');
 export default router;

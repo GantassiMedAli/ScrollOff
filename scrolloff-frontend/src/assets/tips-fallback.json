@@ -4,5 +4,29 @@
     "titre": "Take regular breaks",
     "contenu": "Short breaks every 50 minutes help reduce eye strain and improve attention.",
     "niveau": "low"
+  },
+  {
+    "id": 2,
+    "titre": "Limit screen time before bed",
+    "contenu": "Avoid screens 1 hour before bedtime to improve sleep quality and reduce blue light exposure.",
+    "niveau": "medium"
+  },
+  {
+    "id": 3,
+    "titre": "Set app time limits",
+    "contenu": "Use built-in device features to set daily time limits on social media apps.",
+    "niveau": "medium"
+  },
+  {
+    "id": 4,
+    "titre": "Delete addictive apps",
+    "contenu": "Consider deleting or restricting access to highly addictive social media apps temporarily.",
+    "niveau": "high"
+  },
+  {
+    "id": 5,
+    "titre": "Seek professional help",
+    "contenu": "If social media addiction is severely impacting your life, consider consulting a mental health professional.",
+    "niveau": "high"
   }
 ]

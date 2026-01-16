@@ -5,7 +5,7 @@
       <div class="col-md-8">
         <h1 class="display-4 fw-bold mb-3">Scroll less, live more.</h1>
         <p class="lead mb-4">Take control of your digital lives. Measure your social media habits and discover healthier ways to connect with the world.</p>
-        <button class="btn btn-primary btn-lg px-5">Start the Quiz</button>
+        <button class="btn btn-primary btn-lg px-5" routerLink="/user/quiz">Start the Quiz</button>
       </div>
     </div>
   </div>
@@ -106,17 +106,63 @@
       </div>
     </div>
 
-    <div *ngIf="!loading" class="row g-4">
-      <div class="col-md-4" *ngFor="let challenge of displayedChallenges">
-        <div class="border-card challenge-gradient-card">
-          <h5>{{ challenge.titre }}</h5>
-          <p class="text-muted">
-            {{ challenge.description }}
-          </p>
-          <button class="challenge-btn btn-sm">
-            Join Challenge
+    <div *ngIf="!loading && displayedChallenges.length > 0" class="challenges-carousel">
+      <div id="challengesCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000" data-bs-wrap="true">
+        <!-- Carousel Indicators -->
+        <div class="carousel-indicators">
+          <button
+            *ngFor="let slide of getCarouselSlides(); let i = index"
+            type="button"
+            [attr.data-bs-target]="'#challengesCarousel'"
+            [attr.data-bs-slide-to]="i"
+            [class.active]="i === 0"
+            [attr.aria-label]="'Slide ' + (i + 1)">
           </button>
         </div>
+
+        <!-- Carousel Items -->
+        <div class="carousel-inner">
+          <div
+            *ngFor="let slide of getCarouselSlides(); let i = index"
+            class="carousel-item"
+            [class.active]="i === 0">
+            <div class="row g-4 justify-content-center">
+              <div
+                *ngFor="let challenge of slide"
+                class="col-md-6 col-lg-4">
+                <div class="border-card challenge-gradient-card">
+                  <h5>{{ challenge.titre }}</h5>
+                  <p class="text-muted">
+                    {{ challenge.description }}
+                  </p>
+                  <button class="challenge-btn btn-sm">
+                    Join Challenge
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel Controls -->
+        <button
+          *ngIf="getCarouselSlides().length > 1"
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#challengesCarousel"
+          data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+          *ngIf="getCarouselSlides().length > 1"
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#challengesCarousel"
+          data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
       </div>
     </div>
 

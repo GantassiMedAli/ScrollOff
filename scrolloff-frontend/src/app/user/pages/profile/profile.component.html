@@ -1,0 +1,326 @@
+<app-user-navbar></app-user-navbar>
+
+<div class="settings-page">
+  <!-- Left Sidebar -->
+  <aside class="settings-sidebar">
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">SettingsPage</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-back" (click)="goToDashboard()">
+        <i class="fas fa-arrow-left"></i>
+        <span>← Back to Dashboard</span>
+      </a>
+      <a class="nav-item active" (click)="setActiveSection('profile')">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </a>
+      <a class="nav-item" (click)="setActiveSection('preferences')">
+        <i class="fas fa-cog"></i>
+        <span>Preferences</span>
+      </a>
+      <a class="nav-item" (click)="setActiveSection('notifications')">
+        <i class="fas fa-bell"></i>
+        <span>Notifications</span>
+      </a>
+      <a class="nav-item" (click)="setActiveSection('privacy')">
+        <i class="fas fa-lock"></i>
+        <span>Privacy</span>
+      </a>
+      <a class="nav-item" (click)="setActiveSection('security')">
+        <i class="fas fa-shield-alt"></i>
+        <span>Security</span>
+      </a>
+      <a class="nav-item" (click)="setActiveSection('account')">
+        <i class="fas fa-user-circle"></i>
+        <span>Account</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Right Content Area -->
+  <main class="settings-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">Profile Settings</h1>
+      <p class="page-subtitle">Manage your personal information and preferences</p>
+    </div>
+
+    <!-- Personal Information Card -->
+    <div class="settings-card">
+      <div class="card-header">
+        <h3 class="card-title">Personal Information</h3>
+        <p class="card-subtitle">Update your profile details and photo</p>
+      </div>
+      <div class="card-body">
+        <div class="profile-section">
+          <div class="avatar-section">
+            <div class="avatar-container">
+              <img 
+                [src]="profileData.avatar || 'https://ui-avatars.com/api/?name=' + profileData.fullName + '&background=007bff&color=fff&size=128'" 
+                [alt]="profileData.fullName"
+                class="profile-avatar"
+                onerror="this.src='https://ui-avatars.com/api/?name=' + this.alt + '&background=007bff&color=fff&size=128'">
+            </div>
+            <button class="btn-change-photo" (click)="changePhoto()">
+              Change Photo
+            </button>
+          </div>
+          <div class="form-section">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input 
+                  type="text" 
+                  class="form-input" 
+                  [(ngModel)]="profileData.fullName"
+                  placeholder="Enter your full name">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Username</label>
+                <input 
+                  type="text" 
+                  class="form-input" 
+                  [(ngModel)]="profileData.username"
+                  placeholder="Enter your username">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input 
+                  type="email" 
+                  class="form-input" 
+                  [(ngModel)]="profileData.email"
+                  placeholder="Enter your email">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input 
+                  type="tel" 
+                  class="form-input" 
+                  [(ngModel)]="profileData.phone"
+                  placeholder="Enter your phone number">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Bio</label>
+              <textarea 
+                class="form-textarea" 
+                [(ngModel)]="profileData.bio"
+                rows="4"
+                placeholder="Tell us about yourself"></textarea>
+            </div>
+            <button class="btn-save" (click)="saveChanges()">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Preferences Card -->
+    <div class="settings-card">
+      <div class="card-header">
+        <h3 class="card-title">App Preferences</h3>
+        <p class="card-subtitle">Customize your ScrollOFF experience</p>
+      </div>
+      <div class="card-body">
+        <div class="preference-item">
+          <div class="preference-info">
+            <h4 class="preference-title">Daily Reminders</h4>
+            <p class="preference-desc">Get reminded to check your progress.</p>
+          </div>
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="preferences.dailyReminders"
+              (change)="togglePreference('dailyReminders')">
+            <span class="toggle-slider" [class.active]="preferences.dailyReminders"></span>
+          </label>
+        </div>
+        <div class="preference-item">
+          <div class="preference-info">
+            <h4 class="preference-title">Weekly Reports</h4>
+            <p class="preference-desc">Receive weekly progress summaries.</p>
+          </div>
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="preferences.weeklyReports"
+              (change)="togglePreference('weeklyReports')">
+            <span class="toggle-slider" [class.active]="preferences.weeklyReports"></span>
+          </label>
+        </div>
+        <div class="preference-item">
+          <div class="preference-info">
+            <h4 class="preference-title">Challenge Suggestions</h4>
+            <p class="preference-desc">Get personalized challenge recommendations.</p>
+          </div>
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="preferences.challengeSuggestions"
+              (change)="togglePreference('challengeSuggestions')">
+            <span class="toggle-slider" [class.active]="preferences.challengeSuggestions"></span>
+          </label>
+        </div>
+        <div class="preference-item">
+          <div class="preference-info">
+            <h4 class="preference-title">Community Updates</h4>
+            <p class="preference-desc">Stay updated with community activities.</p>
+          </div>
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="preferences.communityUpdates"
+              (change)="togglePreference('communityUpdates')">
+            <span class="toggle-slider" [class.active]="preferences.communityUpdates"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Settings Card -->
+    <div class="settings-card">
+      <div class="card-header">
+        <h3 class="card-title">Notification Settings</h3>
+        <p class="card-subtitle">Choose what notifications you want to receive</p>
+      </div>
+      <div class="card-body">
+        <div class="notification-item">
+          <div class="notification-icon">
+            <i class="fas fa-mobile-alt"></i>
+          </div>
+          <div class="notification-info">
+            <h4 class="notification-title">Push Notifications</h4>
+            <p class="notification-desc">Receive alerts on your device.</p>
+          </div>
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="notifications.push"
+              (change)="toggleNotification('push')">
+            <span class="toggle-slider" [class.active]="notifications.push"></span>
+          </label>
+        </div>
+        <div class="notification-item">
+          <div class="notification-icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <div class="notification-info">
+            <h4 class="notification-title">Email Notifications</h4>
+            <p class="notification-desc">Get updates via email.</p>
+          </div>
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="notifications.email"
+              (change)="toggleNotification('email')">
+            <span class="toggle-slider" [class.active]="notifications.email"></span>
+          </label>
+        </div>
+        <div class="notification-item">
+          <div class="notification-icon">
+            <i class="fas fa-comment"></i>
+          </div>
+          <div class="notification-info">
+            <h4 class="notification-title">SMS Notifications</h4>
+            <p class="notification-desc">Receive text messages.</p>
+          </div>
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="notifications.sms"
+              (change)="toggleNotification('sms')">
+            <span class="toggle-slider" [class.active]="notifications.sms"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy & Data Card -->
+    <div class="settings-card">
+      <div class="card-header">
+        <h3 class="card-title">Privacy & Data</h3>
+        <p class="card-subtitle">Control your privacy and data sharing preferences</p>
+      </div>
+      <div class="card-body">
+        <div class="checkbox-item">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="privacy.profileVisible"
+              (change)="togglePrivacy('profileVisible')"
+              class="checkbox-input">
+            <span class="checkbox-custom" [class.checked]="privacy.profileVisible"></span>
+            <span class="checkbox-text">Make my profile visible to other users</span>
+          </label>
+        </div>
+        <div class="checkbox-item">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="privacy.shareProgress"
+              (change)="togglePrivacy('shareProgress')"
+              class="checkbox-input">
+            <span class="checkbox-custom" [class.checked]="privacy.shareProgress"></span>
+            <span class="checkbox-text">Share my progress in community challenges</span>
+          </label>
+        </div>
+        <div class="checkbox-item">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="privacy.allowAnalytics"
+              (change)="togglePrivacy('allowAnalytics')"
+              class="checkbox-input">
+            <span class="checkbox-custom" [class.checked]="privacy.allowAnalytics"></span>
+            <span class="checkbox-text">Allow analytics to improve my experience</span>
+          </label>
+        </div>
+        <div class="checkbox-item">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="privacy.showAchievements"
+              (change)="togglePrivacy('showAchievements')"
+              class="checkbox-input">
+            <span class="checkbox-custom" [class.checked]="privacy.showAchievements"></span>
+            <span class="checkbox-text">Show my achievements on my profile</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Management Card -->
+    <div class="settings-card">
+      <div class="card-header">
+        <h3 class="card-title">Account Management</h3>
+        <p class="card-subtitle">Manage your account settings and data</p>
+      </div>
+      <div class="card-body">
+        <div class="danger-zone">
+          <h4 class="danger-title">Danger Zone</h4>
+          <p class="danger-warning">These actions are permanent and cannot be undone. Please proceed with caution.</p>
+          <div class="danger-actions">
+            <button class="btn-export" (click)="exportData()">
+              Export My Data
+            </button>
+            <button class="btn-delete" (click)="deleteAccount()">
+              Delete Account
+            </button>
+          </div>
+        </div>
+        <div class="account-actions">
+          <button class="btn-logout" (click)="logout()">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<app-user-footer></app-user-footer>

@@ -57,8 +57,7 @@ export class UserNavbarComponent implements OnInit {
 
   goToProfile(): void {
     this.showDropdown = false;
-    // Navigate to profile page when it's created
-    // this.router.navigate(['/user/profile']);
+    this.router.navigate(['/user/profile']);
   }
 }
 

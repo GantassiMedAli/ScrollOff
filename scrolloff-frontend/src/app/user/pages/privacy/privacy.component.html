@@ -1,0 +1,265 @@
+<app-user-navbar></app-user-navbar>
+
+<!-- Top Banner Section -->
+<section class="privacy-banner">
+  <div class="banner-content">
+    <div class="banner-icon">
+      <i class="fas fa-shield-alt"></i>
+      <i class="fas fa-check"></i>
+    </div>
+    <h1 class="banner-title">Privacy Policy</h1>
+    <p class="banner-subtitle">Your privacy is important to us. Learn how we collect, use, and protect your data.</p>
+    <p class="banner-updated">Last Updated: {{ lastUpdated }}</p>
+  </div>
+</section>
+
+<!-- Main Content Area -->
+<div class="privacy-container">
+  <div class="privacy-layout">
+    <!-- Left Sidebar - Quick Navigation -->
+    <aside class="privacy-sidebar">
+      <div class="sidebar-box">
+        <h3 class="sidebar-title">Quick Navigation</h3>
+        <nav class="sidebar-nav">
+          <a 
+            class="nav-link" 
+            [class.active]="activeSection === 'introduction'"
+            (click)="setActiveSection('introduction')">
+            <span class="nav-dot"></span>
+            <span class="nav-text">Introduction</span>
+          </a>
+          <a 
+            class="nav-link" 
+            [class.active]="activeSection === 'data-collection'"
+            (click)="setActiveSection('data-collection')">
+            <span class="nav-dot"></span>
+            <span class="nav-text">Data Collection</span>
+          </a>
+          <a 
+            class="nav-link" 
+            [class.active]="activeSection === 'data-usage'"
+            (click)="setActiveSection('data-usage')">
+            <span class="nav-dot"></span>
+            <span class="nav-text">How We Use Data</span>
+          </a>
+          <a 
+            class="nav-link" 
+            [class.active]="activeSection === 'data-protection'"
+            (click)="setActiveSection('data-protection')">
+            <span class="nav-dot"></span>
+            <span class="nav-text">Data Protection</span>
+          </a>
+          <a 
+            class="nav-link" 
+            [class.active]="activeSection === 'your-rights'"
+            (click)="setActiveSection('your-rights')">
+            <span class="nav-dot"></span>
+            <span class="nav-text">Your Rights</span>
+          </a>
+          <a 
+            class="nav-link" 
+            [class.active]="activeSection === 'cookies'"
+            (click)="setActiveSection('cookies')">
+            <span class="nav-dot"></span>
+            <span class="nav-text">Cookies</span>
+          </a>
+          <a 
+            class="nav-link" 
+            [class.active]="activeSection === 'third-parties'"
+            (click)="setActiveSection('third-parties')">
+            <span class="nav-dot"></span>
+            <span class="nav-text">Third Parties</span>
+          </a>
+          <a 
+            class="nav-link" 
+            [class.active]="activeSection === 'contact'"
+            (click)="setActiveSection('contact')">
+            <span class="nav-dot"></span>
+            <span class="nav-text">Contact Us</span>
+          </a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Right Content Area -->
+    <main class="privacy-content">
+      <!-- Section 1: Introduction -->
+      <section id="introduction" class="policy-section">
+        <h2 class="section-title">1. Introduction</h2>
+        <p class="section-text">
+          At ScrollOff, we are committed to protecting your privacy and ensuring the security of your personal information. 
+          This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our 
+          digital wellness platform and services.
+        </p>
+        <div class="info-alert">
+          <i class="fas fa-info-circle"></i>
+          <p>By using our service, you agree to the collection and use of information in accordance with this policy.</p>
+        </div>
+      </section>
+
+      <!-- Section 2: Information We Collect -->
+      <section id="data-collection" class="policy-section">
+        <h2 class="section-title">2. Information We Collect</h2>
+        <p class="section-text">
+          We collect information that you provide directly to us and information that is automatically collected when 
+          you use our services.
+        </p>
+        <ul class="info-list">
+          <li>
+            <span class="list-bullet"></span>
+            <span>Personal identification information (name, email address, phone number)</span>
+          </li>
+          <li>
+            <span class="list-bullet"></span>
+            <span>Account credentials and authentication data</span>
+          </li>
+          <li>
+            <span class="list-bullet"></span>
+            <span>Usage data and interaction patterns with our platform</span>
+          </li>
+          <li>
+            <span class="list-bullet"></span>
+            <span>Device information and technical identifiers</span>
+          </li>
+          <li>
+            <span class="list-bullet"></span>
+            <span>Location data (with your consent)</span>
+          </li>
+          <li>
+            <span class="list-bullet"></span>
+            <span>Content you create, upload, or share on our platform</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Section 3: How We Use Your Information -->
+      <section id="data-usage" class="policy-section">
+        <h2 class="section-title">3. How We Use Your Information</h2>
+        <p class="section-text">
+          We use the information we collect for various purposes to provide, maintain, and improve our services.
+        </p>
+        <ul class="usage-list">
+          <li>
+            <i class="fas fa-arrow-right"></i>
+            <span>To provide, maintain, and improve our services and user experience</span>
+          </li>
+          <li>
+            <i class="fas fa-arrow-right"></i>
+            <span>To personalize your experience and deliver relevant content</span>
+          </li>
+          <li>
+            <i class="fas fa-arrow-right"></i>
+            <span>To process transactions and send related information</span>
+          </li>
+          <li>
+            <i class="fas fa-arrow-right"></i>
+            <span>To send you updates, newsletters, and promotional communications</span>
+          </li>
+          <li>
+            <i class="fas fa-arrow-right"></i>
+            <span>To respond to your inquiries, comments, and support requests</span>
+          </li>
+          <li>
+            <i class="fas fa-arrow-right"></i>
+            <span>To monitor and analyze usage patterns and trends</span>
+          </li>
+          <li>
+            <i class="fas fa-arrow-right"></i>
+            <span>To detect, prevent, and address technical issues and security threats</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Section 4: Data Protection & Security -->
+      <section id="data-protection" class="policy-section">
+        <h2 class="section-title">4. Data Protection & Security</h2>
+        <p class="section-text">
+          We implement industry-standard security measures to protect your personal information from unauthorized access, 
+          alteration, disclosure, or destruction. We use a combination of technical, administrative, and physical safeguards 
+          to ensure the security of your data.
+        </p>
+        <div class="security-box">
+          <h4 class="security-title">Our Security Measures Include:</h4>
+          <ul class="security-list">
+            <li>
+              <i class="fas fa-check-circle"></i>
+              <span>End-to-end encryption for sensitive data transmission</span>
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i>
+              <span>Regular security audits and vulnerability assessments</span>
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i>
+              <span>Secure data storage with access controls and monitoring</span>
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i>
+              <span>Compliance with GDPR and CCPA regulations</span>
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i>
+              <span>Multi-factor authentication for account access</span>
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i>
+              <span>Regular staff training on data protection best practices</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Section 5: Your Privacy Rights -->
+      <section id="your-rights" class="policy-section">
+        <h2 class="section-title">5. Your Privacy Rights</h2>
+        <p class="section-text">
+          You have certain rights regarding your personal information. You can exercise these rights at any time by 
+          contacting us through the methods provided below.
+        </p>
+        <div class="rights-icons">
+          <div class="right-icon">
+            <i class="fas fa-user"></i>
+            <span>View Data</span>
+          </div>
+          <div class="right-icon">
+            <i class="fas fa-pen"></i>
+            <span>Edit Data</span>
+          </div>
+          <div class="right-icon">
+            <i class="fas fa-download"></i>
+            <span>Download Data</span>
+          </div>
+          <div class="right-icon">
+            <i class="fas fa-trash"></i>
+            <span>Delete Data</span>
+          </div>
+          <div class="right-icon">
+            <i class="fas fa-eye"></i>
+            <span>Access Rights</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: Questions About Privacy -->
+      <section id="contact" class="policy-section">
+        <h2 class="section-title">Questions About Privacy?</h2>
+        <p class="section-text">
+          If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, 
+          please don't hesitate to contact us.
+        </p>
+        <div class="contact-info">
+          <a href="mailto:privacy@scrolloff.com" class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <span>privacy@scrolloff.com</span>
+          </a>
+          <a href="tel:+15551234567" class="contact-item">
+            <i class="fas fa-phone"></i>
+            <span>+1 (555) 123-4567</span>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<app-user-footer></app-user-footer>

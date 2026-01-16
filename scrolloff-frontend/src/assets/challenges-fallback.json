@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "titre": "7-Day Screen-Free Evening Challenge",
+    "description": "Commit to spending your evenings without screens. Read a book, meditate, or spend quality time with loved ones.",
+    "niveau": "medium",
+    "date_creation": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "titre": "No Social Media Before Breakfast",
+    "description": "Start your day with intention. Avoid checking social media for the first hour after waking up.",
+    "niveau": "low",
+    "date_creation": "2024-01-14T10:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "titre": "Digital Detox Weekend",
+    "description": "Designate one full day per week as screen-free. Use this time for outdoor activities and real-world connections.",
+    "niveau": "high",
+    "date_creation": "2024-01-13T10:00:00.000Z"
+  }
+]

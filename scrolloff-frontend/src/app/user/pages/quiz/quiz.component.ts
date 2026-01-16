@@ -26,7 +26,7 @@ interface QuizData {
 
 interface QuizResult {
   score: number;
-  category: 'Low' | 'Moderate' | 'High';
+  category: 'Low Risk' | 'Medium Risk' | 'High Risk';
   message: string;
   description: string;
 }
@@ -115,36 +115,54 @@ export class QuizComponent implements OnInit {
     const result = this.calculateResult(totalScore);
     this.result.set(result);
     this.showResults.set(true);
+    
+    // Store the user's level for tips filtering
+    localStorage.setItem('user_quiz_level', result.category.toLowerCase());
+    
+    // Scroll to top when showing results
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   private calculateTotalScore(): number {
-    let total = 0;
+    // BUG FIX 1: Changed from summing option scores to counting correct answers
+    // Previously: summed scores (0-3 per question) could exceed 10 for high usage
+    // Now: counts answers with score 0 or 1 as correct (healthy choices)
+    // Result: score is now correctAnswers/totalQuestions (max 10)
+    let correctAnswers = 0;
     const qs = this.questions();
     const ans = this.answers();
 
     qs.forEach((question) => {
       const answerIndex = ans.get(question.id);
       if (answerIndex !== undefined && answerIndex >= 0 && answerIndex < question.options.length) {
-        total += question.options[answerIndex].score;
+        const selectedScore = question.options[answerIndex].score;
+        // Consider answers with score 0 or 1 as correct (healthy choices)
+        if (selectedScore === 0 || selectedScore === 1) {
+          correctAnswers++;
+        }
       }
     });
 
-    return total;
+    return correctAnswers;
   }
 
   private calculateResult(score: number): QuizResult {
-    if (score >= 0 && score <= 10) {
+    // Score is now correctAnswers out of 10
+    // 0–3: High Risk (Needs most help)
+    // 4–6: Medium Risk (On the right track)
+    // 7–10: Low Risk (Doing great)
+    if (score >= 7) {
       return {
         score,
-        category: 'Low',
+        category: 'Low Risk',
         message: "You're doing great!",
         description:
           'Your score indicates a healthy relationship with social media. You have good control over your usage and maintain a balanced digital lifestyle. Keep up the excellent work!'
       };
-    } else if (score >= 11 && score <= 20) {
+    } else if (score >= 4) {
       return {
         score,
-        category: 'Moderate',
+        category: 'Medium Risk',
         message: "You're on the right track!",
         description:
           'Your score indicates a moderate relationship with social media. You have some healthy habits in place, but there\'s room for improvement. With a few adjustments, you can achieve better digital balance and reclaim more time for activities that truly matter to you.'
@@ -152,7 +170,7 @@ export class QuizComponent implements OnInit {
     } else {
       return {
         score,
-        category: 'High',
+        category: 'High Risk',
         message: "It's time to take action!",
         description:
           'Your score suggests that social media may be having a significant impact on your daily life. This is a great opportunity to make positive changes. With the right strategies and support, you can develop healthier digital habits and regain control of your time and attention.'
@@ -165,5 +183,7 @@ export class QuizComponent implements OnInit {
     this.answers.set(new Map());
     this.showResults.set(false);
     this.result.set(null);
+    // Clear stored level when restarting quiz
+    localStorage.removeItem('user_quiz_level');
   }
 }

@@ -23,12 +23,18 @@
       {{ error }}
     </div>
 
-    <div *ngIf="!loading && !error && tips.length === 0" class="text-center py-5">
-      <p class="text-muted">No tips available at the moment. Check back soon!</p>
+    <div *ngIf="!loading && !error && filteredTips.length === 0" class="text-center py-5">
+      <p class="text-muted">No tips available for your level at the moment. Check back soon!</p>
     </div>
 
-    <div *ngIf="!loading && !error && tips.length > 0" class="row g-4">
-      <div class="col-md-6 col-lg-4" *ngFor="let tip of tips; let i = index">
+    <div *ngIf="!loading && !error && filteredTips.length > 0" class="row g-4">
+      <div class="col-12 mb-4">
+        <div class="text-center">
+          <h3 class="text-primary">Showing {{ getLevelLabel(userLevel) }} Level Tips</h3>
+          <p class="text-muted">Tips tailored to your quiz results</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4" *ngFor="let tip of filteredTips; let i = index">
         <div class="tip-card border-card fade-in" [style.animation-delay]="(i * 0.1) + 's'">
           <div class="d-flex justify-content-between align-items-start mb-3">
             <span class="level-badge" [ngClass]="getLevelClass(tip.niveau)">

@@ -85,17 +85,66 @@
     transition: all 0.3s ease;
 }
 
+/* Carousel Styles */
+.challenges-carousel {
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
+.challenges-carousel .carousel-item {
+    padding: 2rem 0;
+    transition: transform 0.6s ease-in-out;
+}
 
+.challenges-carousel .carousel-inner {
+    overflow: hidden;
+}
 
+.challenges-carousel .carousel-item.active,
+.challenges-carousel .carousel-item-next,
+.challenges-carousel .carousel-item-prev {
+    display: flex;
+}
 
+.challenges-carousel .carousel-indicators {
+    bottom: -40px;
+}
 
+.challenges-carousel .carousel-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+    background-color: transparent;
+    opacity: 0.5;
+    margin: 0 6px;
+}
 
+.challenges-carousel .carousel-indicators button.active {
+    background-color: #007bff;
+    opacity: 1;
+}
 
+.challenges-carousel .carousel-control-prev,
+.challenges-carousel .carousel-control-next {
+    width: 5%;
+    opacity: 0.8;
+}
 
+.challenges-carousel .carousel-control-prev-icon,
+.challenges-carousel .carousel-control-next-icon {
+    width: 20px;
+    height: 20px;
+}
 
+/* Responsive adjustments for carousel */
+@media (max-width: 768px) {
+    .challenges-carousel .carousel-item .col-md-6 {
+        margin-bottom: 2rem;
+    }
 
-
-
-
-
+    .challenges-carousel .carousel-control-prev,
+    .challenges-carousel .carousel-control-next {
+        display: none; /* Hide controls on mobile, use indicators only */
+    }
+}
