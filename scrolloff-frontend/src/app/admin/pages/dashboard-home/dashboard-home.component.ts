@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AdminService } from '../../../core/services';
 
 interface User {
@@ -45,7 +46,7 @@ export class DashboardHomeComponent implements OnInit {
   timeTrend = '+2.3hrs this month';
   completionTrend = '-2% from last month';
 
-  constructor(private adminService: AdminService) { }
+  constructor(private adminService: AdminService, private router: Router) { }
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -169,5 +170,13 @@ export class DashboardHomeComponent implements OnInit {
       console.log('Delete user:', user);
       // Call delete endpoint
     }
+  }
+
+  addUser(): void {
+    this.router.navigate(['/admin/users']);
+  }
+
+  addChallenge(): void {
+    this.router.navigate(['/admin/challenges']);
   }
 }
