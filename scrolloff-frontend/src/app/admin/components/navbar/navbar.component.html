@@ -1,11 +1,19 @@
 <nav class="admin-navbar">
-  <div class="container-fluid d-flex justify-content-between align-items-center">
-    <span class="navbar-brand mb-0">ScrollOff Admin</span>
-    <div class="d-flex align-items-center gap-3">
-      <span class="admin-username">{{ adminUsername }}</span>
-      <button class="btn btn-sm btn-outline-light" (click)="logout()">
-        Logout
+  <div class="container-fluid d-flex justify-content-between align-items-center px-4">
+    <div class="navbar-left">
+      <!-- Title will be in the main content area -->
+    </div>
+    <div class="navbar-right d-flex align-items-center gap-3">
+      <button class="icon-btn" title="Search">
+        <i class="bi bi-search"></i>
       </button>
+      <button class="icon-btn" title="Notifications">
+        <i class="bi bi-bell"></i>
+      </button>
+      <div class="admin-profile d-flex align-items-center gap-2">
+        <div class="admin-avatar">{{ getInitials(adminUsername) }}</div>
+        <span class="admin-username">{{ adminUsername }}</span>
+      </div>
     </div>
   </div>
 </nav>

@@ -1,12 +1,28 @@
 .sidebar {
   background-color: #111827;
   min-height: calc(100vh - 70px);
-  padding: 1.5rem 0;
+  padding: 0;
   width: 250px;
   position: fixed;
   left: 0;
   top: 70px;
   box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-logo {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
 }
 
 .sidebar ul {
@@ -38,7 +54,7 @@
 
 .sidebar .nav-link.active {
   color: white;
-  background-color: rgba(59, 130, 246, 0.2);
+  background-color: #3B82F6;
   border-left-color: #3B82F6;
 }
 
@@ -46,4 +62,11 @@
   margin-right: 0.75rem;
   width: 20px;
   text-align: center;
+  font-size: 1rem;
+}
+
+.nav-item-logout {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }

@@ -17,12 +17,9 @@ export class ChallengeService {
 
   /**
    * Get all challenges (public endpoint)
+   * Always tries API first, falls back to JSON only on error
    */
   getChallenges(): Observable<Challenge[]> {
-    if (!environment.production) {
-      return this.http.get<Challenge[]>('/assets/challenges-fallback.json');
-    }
-
     return this.http.get<Challenge[]>(`${this.api.baseUrl}/challenges`).pipe(
       catchError(_ => this.http.get<Challenge[]>('/assets/challenges-fallback.json'))
     );

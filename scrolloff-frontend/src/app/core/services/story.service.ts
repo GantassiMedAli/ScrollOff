@@ -18,13 +18,9 @@ export class StoryService {
 
   /**
    * Get all approved stories (public endpoint)
+   * Always tries API first, falls back to JSON only on error
    */
   getStories(): Observable<Story[]> {
-    // In development, serve the local fallback asset directly to prevent 404 network errors
-    if (!environment.production) {
-      return this.http.get<Story[]>('/assets/stories-fallback.json');
-    }
-
     return this.http.get<Story[]>(`${this.api.baseUrl}/stories`).pipe(
       catchError(_ => this.http.get<Story[]>('/assets/stories-fallback.json'))
     );

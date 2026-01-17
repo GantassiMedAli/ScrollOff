@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { ThemeService } from '../../../core/services';
 
 @Component({
   selector: 'app-user-navbar',
@@ -13,14 +14,23 @@ export class UserNavbarComponent implements OnInit {
   isAuthenticated = false;
   currentUser: any = null;
   showDropdown = false;
+  isDarkMode = false;
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private themeService: ThemeService
   ) { }
 
   ngOnInit(): void {
     this.checkAuthStatus();
+    this.checkTheme();
+    
+    // Subscribe to theme changes
+    this.themeService.theme$.subscribe(theme => {
+      this.isDarkMode = theme === 'dark';
+    });
+    
     // Close dropdown when clicking outside
     document.addEventListener('click', (event) => {
       const target = event.target as HTMLElement;
@@ -28,6 +38,14 @@ export class UserNavbarComponent implements OnInit {
         this.closeDropdown();
       }
     });
+  }
+
+  checkTheme(): void {
+    this.isDarkMode = this.themeService.isDarkMode();
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
   checkAuthStatus(): void {

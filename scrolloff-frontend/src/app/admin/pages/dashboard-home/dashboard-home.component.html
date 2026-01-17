@@ -4,68 +4,192 @@
     <app-sidebar></app-sidebar>
     <div class="dashboard-container">
       <div class="container-fluid">
-    <div class="mb-4">
-      <h2 class="page-title">Dashboard Overview</h2>
-      <p class="text-muted">Welcome to the ScrollOff admin dashboard</p>
-    </div>
+        
+        <!-- Header -->
+        <div class="dashboard-header mb-4">
+          <h1 class="dashboard-title">Dashboard Overview</h1>
+          <div class="header-separator"></div>
+        </div>
 
-    <!-- Statistics Cards -->
-    <div class="row g-4 mb-4">
-      <div class="col-md-6 col-lg-3">
-        <app-stats-card
-          title="Total Users"
-          [value]="loading ? '...' : stats.totalUsers"
-          icon="fas fa-users"
-          color="primary"
-        ></app-stats-card>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <app-stats-card
-          title="Total Tests"
-          [value]="loading ? '...' : stats.totalTests"
-          icon="fas fa-clipboard-check"
-          color="success"
-        ></app-stats-card>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <app-stats-card
-          title="Pending Stories"
-          [value]="loading ? '...' : stats.pendingStories"
-          icon="fas fa-hourglass-half"
-          color="warning"
-        ></app-stats-card>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <app-stats-card
-          title="Active Challenges"
-          [value]="loading ? '...' : stats.activeChallenges"
-          icon="fas fa-trophy"
-          color="danger"
-        ></app-stats-card>
-      </div>
-    </div>
-
-    <!-- Charts Section (Placeholder) -->
-    <div class="row g-4">
-      <div class="col-lg-6">
-        <div class="chart-card">
-          <h5 class="card-title">Recent Activity</h5>
-          <div class="chart-placeholder">
-            <p class="text-muted">Chart visualization will be implemented here</p>
+        <!-- Loading State -->
+        <div *ngIf="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
           </div>
         </div>
-      </div>
-      <div class="col-lg-6">
-        <div class="chart-card">
-          <h5 class="card-title">Performance Metrics</h5>
-          <div class="chart-placeholder">
-            <p class="text-muted">Chart visualization will be implemented here</p>
+
+        <!-- Main Content -->
+        <div *ngIf="!loading">
+          
+          <!-- Stats Cards Row -->
+          <div class="row g-4 mb-5">
+            <!-- Total Users Card -->
+            <div class="col-md-6 col-lg-3">
+              <div class="metric-card">
+                <div class="metric-icon users-icon">
+                  <i class="bi bi-people"></i>
+                </div>
+                <div class="metric-content">
+                  <div class="metric-label">TOTAL USERS</div>
+                  <div class="metric-value">{{ stats.totalUsers | number }}</div>
+                  <div class="metric-trend trend-positive">
+                    <i class="bi bi-arrow-up"></i>
+                    <span>{{ userTrend }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Challenges Card -->
+            <div class="col-md-6 col-lg-3">
+              <div class="metric-card">
+                <div class="metric-icon challenges-icon">
+                  <i class="bi bi-trophy"></i>
+                </div>
+                <div class="metric-content">
+                  <div class="metric-label">ACTIVE CHALLENGES</div>
+                  <div class="metric-value">{{ stats.activeChallenges }}</div>
+                  <div class="metric-trend trend-positive">
+                    <i class="bi bi-arrow-up"></i>
+                    <span>{{ challengeTrend }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Avg Time Saved Card -->
+            <div class="col-md-6 col-lg-3">
+              <div class="metric-card">
+                <div class="metric-icon time-icon">
+                  <i class="bi bi-clock"></i>
+                </div>
+                <div class="metric-content">
+                  <div class="metric-label">AVG. TIME SAVED</div>
+                  <div class="metric-value">{{ stats.avgTimeSaved }}hrs</div>
+                  <div class="metric-trend trend-positive">
+                    <i class="bi bi-arrow-up"></i>
+                    <span>{{ timeTrend }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Completion Rate Card -->
+            <div class="col-md-6 col-lg-3">
+              <div class="metric-card">
+                <div class="metric-icon completion-icon">
+                  <i class="bi bi-graph-up"></i>
+                </div>
+                <div class="metric-content">
+                  <div class="metric-label">COMPLETION RATE</div>
+                  <div class="metric-value">{{ stats.completionRate }}%</div>
+                  <div class="metric-trend trend-negative">
+                    <i class="bi bi-arrow-down"></i>
+                    <span>{{ completionTrend }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+
+          <!-- Recent Users and Active Challenges Row -->
+          <div class="row g-4">
+            <!-- Recent Users Section -->
+            <div class="col-lg-8">
+              <div class="section-card">
+                <div class="section-header">
+                  <h3 class="section-title">Recent Users</h3>
+                  <button class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus me-1"></i>Add User
+                  </button>
+                </div>
+                
+                <div class="table-responsive">
+                  <table class="table users-table">
+                    <thead>
+                      <tr>
+                        <th>USER</th>
+                        <th>STATUS</th>
+                        <th>JOINED</th>
+                        <th>CHALLENGES</th>
+                        <th>ACTIONS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let user of recentUsers">
+                        <td>
+                          <div class="user-info">
+                            <div class="user-avatar">{{ getUserInitials(user.name) }}</div>
+                            <div class="user-details">
+                              <div class="user-name">{{ user.name }}</div>
+                              <div class="user-email">{{ user.email }}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span class="status-badge" [ngClass]="getStatusClass(user.is_active)">
+                            {{ user.is_active ? 'Active' : 'Inactive' }}
+                          </span>
+                        </td>
+                        <td class="date-cell">{{ formatDate(user.date_inscription) }}</td>
+                        <td class="challenges-cell">
+                          {{ getRandomChallengeCount() }}
+                        </td>
+                        <td>
+                          <div class="action-buttons">
+                            <button class="btn-icon" (click)="viewUser(user)" title="View">
+                              <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn-icon" (click)="editUser(user)" title="Edit">
+                              <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn-icon btn-icon-danger" (click)="deleteUser(user)" title="Delete">
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Challenges Section -->
+            <div class="col-lg-4">
+              <div class="section-card">
+                <div class="section-header">
+                  <h3 class="section-title">Active Challenges</h3>
+                  <button class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus me-1"></i>New
+                  </button>
+                </div>
+                
+                <div class="challenges-list">
+                  <div class="challenge-card" *ngFor="let challenge of activeChallenges">
+                    <div class="challenge-header">
+                      <h4 class="challenge-title">{{ challenge.titre }}</h4>
+                      <span class="challenge-status">ACTIVE</span>
+                    </div>
+                    <div class="challenge-stats">
+                      <div class="stat-item">
+                        <span class="stat-value">{{ challenge.participants | number }}</span>
+                        <span class="stat-label">Participants</span>
+                      </div>
+                      <div class="stat-item">
+                        <span class="stat-value">{{ challenge.successRate }}%</span>
+                        <span class="stat-label">Success</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
-      </div>
-      </div>
+
       </div>
     </div>
   </div>
 </div>
-

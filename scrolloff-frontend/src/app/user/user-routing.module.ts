@@ -12,6 +12,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { SignupComponent } from './pages/signup/signup.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { PrivacyComponent } from './pages/privacy/privacy.component';
+import { ContactComponent } from './pages/contact/contact.component';
 
 
 const routes: Routes = [
@@ -67,6 +68,10 @@ const routes: Routes = [
   {
     path: 'privacy',
     component: PrivacyComponent
+  },
+  {
+    path: 'contact',
+    component: ContactComponent
   }
 ];
 

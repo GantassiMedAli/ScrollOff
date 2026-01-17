@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { UserNavbarComponent } from '../../components/navbar/navbar.component';
 import { UserFooterComponent } from '../../components/footer/footer.component';
+import { QuizService } from '../../../core/services';
 
 interface QuizOption {
   text: string;
@@ -40,6 +41,7 @@ interface QuizResult {
 })
 export class QuizComponent implements OnInit {
   private http = inject(HttpClient);
+  private quizService = inject(QuizService);
 
   questions = signal<QuizQuestion[]>([]);
   currentQuestionIndex = signal(0);
@@ -118,6 +120,20 @@ export class QuizComponent implements OnInit {
     
     // Store the user's level for tips filtering
     localStorage.setItem('user_quiz_level', result.category.toLowerCase());
+    
+    // Save quiz result to database
+    this.quizService.saveQuizResult({
+      score: result.score,
+      niveau: result.category
+    }).subscribe({
+      next: (response) => {
+        console.log('Quiz result saved successfully:', response);
+      },
+      error: (error) => {
+        console.error('Failed to save quiz result:', error);
+        // Don't show error to user - quiz completion is more important than saving
+      }
+    });
     
     // Scroll to top when showing results
     window.scrollTo({ top: 0, behavior: 'smooth' });

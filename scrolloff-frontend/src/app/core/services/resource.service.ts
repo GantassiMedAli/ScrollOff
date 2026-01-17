@@ -17,12 +17,9 @@ export class ResourceService {
 
   /**
    * Get all resources (public endpoint)
+   * Always tries API first, falls back to JSON only on error
    */
   getResources(): Observable<Resource[]> {
-    if (!environment.production) {
-      return this.http.get<Resource[]>('/assets/resources-fallback.json');
-    }
-
     return this.http.get<Resource[]>(`${this.api.baseUrl}/resources`).pipe(
       catchError(_ => this.http.get<Resource[]>('/assets/resources-fallback.json'))
     );

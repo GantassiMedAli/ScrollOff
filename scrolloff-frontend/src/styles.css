@@ -6,6 +6,39 @@
 /* Font Awesome - Using CDN instead of npm package */
 /* Add this to your index.html: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> */
 
+/* ========== DARK MODE CSS VARIABLES ========== */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-card: #ffffff;
+  --text-primary: #212529;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --nav-bg: #ffffff;
+  --footer-bg: #1e293b;
+  --footer-text: #ffffff;
+}
+
+.dark-theme {
+  --bg-primary: #1e293b;
+  --bg-secondary: #0f172a;
+  --bg-card: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --border-color: #475569;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --nav-bg: #1e293b;
+  --footer-bg: #0f172a;
+  --footer-text: #cbd5e1;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 /* Admin Layout Styles */
 .admin-layout {
   display: flex;

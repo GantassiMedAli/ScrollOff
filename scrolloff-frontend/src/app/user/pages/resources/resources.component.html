@@ -1,16 +1,78 @@
 <app-user-navbar></app-user-navbar>
 
-<section class="resources-hero py-5 text-center text-white mt-5">
+<!-- HERO SECTION -->
+<section class="resources-hero py-5 text-white mt-5">
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-md-8">
-        <h1 class="display-4 fw-bold mb-3">Resources</h1>
-        <p class="lead">Trusted videos, podcasts, guides, and tools to help you on your digital wellness journey</p>
+      <div class="col-md-8 text-center">
+        <h1 class="display-4 fw-bold mb-3">Resources & Inspiration</h1>
+        <p class="lead">Explore evidence-based articles, inspiring videos, and success stories to support your digital wellness journey.</p>
       </div>
     </div>
   </div>
 </section>
 
+<!-- SEARCH AND FILTERS SECTION -->
+<section class="resources-filters py-4 bg-light">
+  <div class="container">
+    <!-- Search Bar -->
+    <div class="row mb-4">
+      <div class="col-md-10">
+        <div class="search-container position-relative">
+          <i class="bi bi-search search-icon"></i>
+          <input 
+            type="text" 
+            class="form-control search-input ps-5" 
+            placeholder="Search for articles, videos, or stories..."
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="onSearch()">
+        </div>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100" (click)="onSearch()">
+          Search
+        </button>
+      </div>
+    </div>
+
+    <!-- Resource Type Filters -->
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="filter-buttons d-flex flex-wrap gap-2">
+          <button 
+            *ngFor="let filter of typeFilters"
+            class="btn filter-btn"
+            [class.active]="selectedTypeFilter === filter.value"
+            (click)="selectedTypeFilter = filter.value; onFilterChange()">
+            {{ filter.label }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Topic Filters and Sort -->
+    <div class="row align-items-center">
+      <div class="col-md-10">
+        <div class="filter-buttons d-flex flex-wrap gap-2">
+          <button 
+            *ngFor="let filter of topicFilters"
+            class="btn filter-btn"
+            [class.active]="selectedTopicFilter === filter.value"
+            (click)="selectedTopicFilter = filter.value; onFilterChange()">
+            {{ filter.label }}
+          </button>
+        </div>
+      </div>
+      <div class="col-md-2 text-end">
+        <select class="form-select sort-select" [(ngModel)]="sortBy" (change)="onFilterChange()">
+          <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESOURCES CONTENT -->
 <section class="resources-content py-5">
   <div class="container">
     <div *ngIf="loading" class="text-center py-5">
@@ -23,30 +85,69 @@
       {{ error }}
     </div>
 
-    <div *ngIf="!loading && !error && resources.length === 0" class="text-center py-5">
-      <p class="text-muted">No resources available at the moment. Check back soon!</p>
+    <div *ngIf="!loading && !error && filteredResources.length === 0" class="text-center py-5">
+      <p class="text-muted">No resources found matching your criteria. Try adjusting your filters.</p>
     </div>
 
-    <div *ngIf="!loading && !error && resources.length > 0" class="row g-4">
-      <div class="col-md-6 col-lg-4" *ngFor="let resource of resources; let i = index">
-        <div class="resource-card border-card fade-in" [style.animation-delay]="(i * 0.1) + 's'">
-          <div class="d-flex align-items-center mb-3">
-            <span class="type-badge" [ngClass]="getTypeClass(resource.type)">
-              <i class="fas" [ngClass]="getTypeIcon(resource.type)"></i>
-              <span class="ms-2">{{ resource.type }}</span>
-            </span>
+    <!-- Resources Grid -->
+    <div *ngIf="!loading && !error && filteredResources.length > 0" class="row g-4">
+      <div class="col-md-6 col-lg-4" *ngFor="let resource of getPaginatedResources(); let i = index">
+        <div class="resource-card card fade-in" [style.animation-delay]="(i * 0.1) + 's'">
+          <!-- Resource Image -->
+          <div class="resource-image-wrapper">
+            <img [src]="getResourceImage(resource)" [alt]="resource.titre" class="resource-image">
+            <div class="resource-type-overlay">
+              <span class="type-badge" [ngClass]="getTypeClass(resource.type)">
+                <i class="bi" [ngClass]="getTypeIcon(resource.type)"></i>
+                <span class="ms-1">{{ getTypeLabel(resource.type) }}</span>
+                <span class="ms-2 read-time">{{ getReadTime(resource.type) }}</span>
+              </span>
+            </div>
           </div>
-          <h5 class="fw-bold mb-3">{{ resource.titre }}</h5>
-          <p class="text-muted mb-4">{{ resource.description }}</p>
-          <button 
-            class="btn btn-primary btn-sm w-100" 
-            (click)="openResource(resource.lien)"
-            [disabled]="!resource.lien">
-            <i class="fas fa-external-link-alt me-2"></i>
-            Open Resource
-          </button>
+
+          <!-- Card Body -->
+          <div class="card-body">
+            <h5 class="card-title fw-bold mb-2">{{ resource.titre }}</h5>
+            <p class="card-text text-muted mb-3">{{ resource.description }}</p>
+            
+            <!-- Topic Tag -->
+            <div class="mb-3">
+              <span class="topic-tag">{{ getTopicTag(resource) }}</span>
+            </div>
+
+            <!-- Action Button -->
+            <button 
+              class="btn btn-primary w-100 resource-action-btn" 
+              (click)="openResource(resource.lien)"
+              [disabled]="!resource.lien">
+              {{ getActionButtonText(resource.type) }}
+            </button>
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!loading && !error && totalPages > 1" class="pagination-wrapper mt-5">
+      <nav aria-label="Resources pagination">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link" (click)="onPageChange(currentPage - 1)" [attr.tabindex]="currentPage === 1 ? '-1' : null">Previous</a>
+          </li>
+          <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage">
+            <a class="page-link" (click)="onPageChange(page)">{{ page }}</a>
+          </li>
+          <li class="page-item" *ngIf="currentPage < totalPages - 2">
+            <span class="page-link">...</span>
+          </li>
+          <li class="page-item" *ngIf="totalPages > 1 && currentPage < totalPages" [class.active]="totalPages === currentPage">
+            <a class="page-link" (click)="onPageChange(totalPages)">{{ totalPages }}</a>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link" (click)="onPageChange(currentPage + 1)" [attr.tabindex]="currentPage === totalPages ? '-1' : null">Next</a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </section>

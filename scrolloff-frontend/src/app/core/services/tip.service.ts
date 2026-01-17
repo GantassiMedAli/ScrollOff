@@ -17,12 +17,9 @@ export class TipService {
 
   /**
    * Get all tips (public endpoint)
+   * Always tries API first, falls back to JSON only on error
    */
   getTips(): Observable<Tip[]> {
-    if (!environment.production) {
-      return this.http.get<Tip[]>('/assets/tips-fallback.json');
-    }
-
     return this.http.get<Tip[]>(`${this.api.baseUrl}/tips`).pipe(
       catchError(_ => this.http.get<Tip[]>('/assets/tips-fallback.json'))
     );

@@ -1,43 +1,48 @@
 <nav class="sidebar">
+  <!-- Logo -->
+  <div class="sidebar-logo">
+    <img src="/assets/images/logos/logo-scrolloff-bleu-ciel.png" alt="ScrollOff" class="logo-img" />
+  </div>
+  
   <ul class="nav flex-column">
     <li class="nav-item">
       <a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active">
-        <i class="fas fa-home"></i> Dashboard
+        <i class="bi bi-grid-3x3-gap"></i> Dashboard
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" routerLink="/admin/users" routerLinkActive="active">
-        <i class="fas fa-users"></i> Users
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/admin/results" routerLinkActive="active">
-        <i class="fas fa-chart-bar"></i> Results
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/admin/stories" routerLinkActive="active">
-        <i class="fas fa-book"></i> Stories
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/admin/tips" routerLinkActive="active">
-        <i class="fas fa-lightbulb"></i> Tips
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/admin/resources" routerLinkActive="active">
-        <i class="fas fa-folder-open"></i> Resources
+        <i class="bi bi-people"></i> Users
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" routerLink="/admin/challenges" routerLinkActive="active">
-        <i class="fas fa-trophy"></i> Challenges
+        <i class="bi bi-trophy"></i> Challenges
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" routerLink="/admin/admins" routerLinkActive="active">
-        <i class="fas fa-user-shield"></i> Admin Management
+      <a class="nav-link" routerLink="/admin/tips" routerLinkActive="active">
+        <i class="bi bi-lightbulb"></i> Tips
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/stories" routerLinkActive="active">
+        <i class="bi bi-chat-dots"></i> Stories
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/results" routerLinkActive="active">
+        <i class="bi bi-graph-up"></i> Analytics
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/settings" routerLinkActive="active">
+        <i class="bi bi-gear"></i> Settings
+      </a>
+    </li>
+    <li class="nav-item nav-item-logout">
+      <a class="nav-link" (click)="logout()" style="cursor: pointer;">
+        <i class="bi bi-box-arrow-right"></i> Logout
       </a>
     </li>
   </ul>

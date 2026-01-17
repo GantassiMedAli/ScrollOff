@@ -543,6 +543,94 @@ app.patch("/api/admin/users/:id", verifyToken, (req, res) => {
 
 // ==================== RESULTS ROUTES ====================
 
+// Save quiz result (user endpoint - can be authenticated or public)
+app.post("/api/results", (req, res) => {
+  const { score, niveau } = req.body;
+  
+  // Try to extract user ID from token if provided
+  let userId = null;
+  const authHeader = req.headers && (req.headers.authorization || req.headers['x-access-token']);
+  if (authHeader) {
+    try {
+      const token = typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
+        ? authHeader.split(' ')[1]
+        : authHeader;
+      if (token && token !== 'null' && token !== 'undefined') {
+        const decoded = jwt.decode(token);
+        if (decoded && decoded.id) {
+          userId = decoded.id;
+        }
+      }
+    } catch (e) {
+      // Ignore token errors - allow anonymous results
+    }
+  }
+
+  if (!score || score < 0 || score > 10) {
+    return res.status(400).json({ error: "Invalid score. Must be between 0 and 10." });
+  }
+
+  if (!niveau || !['low', 'medium', 'high'].includes(niveau.toLowerCase())) {
+    return res.status(400).json({ error: "Invalid niveau. Must be 'low', 'medium', or 'high'." });
+  }
+
+  // Map category to niveau (from frontend QuizResult)
+  const niveauMap = {
+    'Low Risk': 'low',
+    'Medium Risk': 'medium',
+    'High Risk': 'high'
+  };
+  const dbNiveau = niveauMap[niveau] || niveau.toLowerCase();
+
+  db.query(
+    "INSERT INTO resultat (id_user, score, niveau, date_test) VALUES (?, ?, ?, NOW())",
+    [userId, score, dbNiveau],
+    (err, results) => {
+      if (err) {
+        console.error("Error saving quiz result:", err);
+        return res.status(500).json({ error: "Failed to save quiz result" });
+      }
+      res.status(201).json({ 
+        message: "Quiz result saved successfully",
+        id: results.insertId 
+      });
+    }
+  );
+});
+
+// Public endpoint to save quiz result (optional - for unauthenticated users)
+app.post("/api/results/public", (req, res) => {
+  const { score, niveau } = req.body;
+
+  if (!score || score < 0 || score > 10) {
+    return res.status(400).json({ error: "Invalid score. Must be between 0 and 10." });
+  }
+
+  // Map category to niveau
+  const niveauMap = {
+    'Low Risk': 'low',
+    'Medium Risk': 'medium',
+    'High Risk': 'high'
+  };
+  const dbNiveau = niveauMap[niveau] || (niveau ? niveau.toLowerCase() : 'medium');
+
+  // Save without user ID (anonymous result)
+  db.query(
+    "INSERT INTO resultat (score, niveau, date_test) VALUES (?, ?, NOW())",
+    [score, dbNiveau],
+    (err, results) => {
+      if (err) {
+        console.error("Error saving quiz result:", err);
+        return res.status(500).json({ error: "Failed to save quiz result" });
+      }
+      res.status(201).json({ 
+        message: "Quiz result saved successfully",
+        id: results.insertId 
+      });
+    }
+  );
+});
+
 // Get results statistics
 app.get("/api/admin/results/stats", verifyToken, (req, res) => {
   const stats = {};

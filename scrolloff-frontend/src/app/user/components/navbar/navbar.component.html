@@ -22,6 +22,9 @@
           <a class="nav-link" routerLink="/user/about" routerLinkActive="active">About</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" routerLink="/user/contact" routerLinkActive="active">Contact</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" routerLink="/user/quiz" routerLinkActive="active">Quiz</a>
         </li>
         <li class="nav-item">
@@ -31,7 +34,16 @@
           <a class="nav-link" routerLink="/user/resources" routerLinkActive="active">Resources</a>
         </li>
       </ul>
-      <div class="d-flex align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <!-- Theme Toggle Button -->
+        <button 
+          class="btn btn-link theme-toggle p-2" 
+          (click)="toggleTheme()"
+          type="button"
+          [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
+          <i class="bi" [class.bi-sun]="isDarkMode" [class.bi-moon]="!isDarkMode"></i>
+        </button>
+
         <!-- Show Login/Signup when NOT authenticated -->
         <div *ngIf="!isAuthenticated" class="d-flex">
           <a class="btn btn-primary btn-nav me-2" routerLink="/user/login">Login</a>

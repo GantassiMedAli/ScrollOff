@@ -17,6 +17,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { SignupComponent } from './pages/signup/signup.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { PrivacyComponent } from './pages/privacy/privacy.component';
+import { ContactComponent } from './pages/contact/contact.component';
 
 import { UserNavbarComponent } from './components/navbar/navbar.component';
 import { UserFooterComponent } from './components/footer/footer.component';
@@ -34,6 +35,7 @@ import { UserFooterComponent } from './components/footer/footer.component';
     SignupComponent,
     ProfileComponent,
     PrivacyComponent,
+    ContactComponent,
     
   ],
  imports: [

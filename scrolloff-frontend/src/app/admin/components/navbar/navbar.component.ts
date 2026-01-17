@@ -20,5 +20,14 @@ export class NavbarComponent implements OnInit {
   logout(): void {
     this.authService.logout();
   }
+
+  getInitials(username: string): string {
+    if (!username) return 'A';
+    const parts = username.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return username.substring(0, 2).toUpperCase();
+  }
 }
 

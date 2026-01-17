@@ -1,29 +1,64 @@
 .admin-navbar {
-  background-color: #3B82F6;
-  color: white;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
   padding: 1rem 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 70px;
 }
 
-.navbar-brand {
-  color: white !important;
-  font-weight: 600;
+.navbar-left {
+  flex: 1;
+}
+
+.navbar-right {
+  gap: 1rem;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
   font-size: 1.25rem;
 }
 
+.icon-btn:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.admin-profile {
+  padding-left: 1rem;
+  border-left: 1px solid #e5e7eb;
+}
+
+.admin-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
 .admin-username {
-  color: white;
+  color: #111827;
   font-weight: 500;
-}
-
-.btn-outline-light {
-  border-color: white;
-  color: white;
-  border-radius: 6px;
-  transition: all 0.2s;
-}
-
-.btn-outline-light:hover {
-  background-color: white;
-  color: #3B82F6;
+  font-size: 0.9375rem;
 }
