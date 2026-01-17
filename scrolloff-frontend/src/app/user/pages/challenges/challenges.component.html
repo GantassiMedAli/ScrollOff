@@ -1,93 +1,234 @@
 <app-user-navbar></app-user-navbar>
 
-<section class="challenges-hero py-5 text-center text-white mt-5">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <h1 class="display-4 fw-bold mb-3">Digital Detox Challenges</h1>
-        <p class="lead">Take on concrete challenges designed to help you build healthier digital habits</p>
+<!-- Hero Header Section -->
+<section class="challenges-hero-header">
+  <div class="hero-container">
+    <h1 class="hero-title">Transform Your Digital Habits</h1>
+    <p class="hero-subtitle">Join thousands taking on challenges to reduce screen time and reclaim their lives</p>
+    
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-value">52K+</div>
+        <div class="stat-label">Active Participants</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">23</div>
+        <div class="stat-label">Live Challenges</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">87%</div>
+        <div class="stat-label">Success Rate</div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="challenges-content py-5">
-  <div class="container">
-    <div *ngIf="loading" class="text-center py-5">
+<!-- Filter Bar -->
+<section class="filter-bar">
+  <div class="filter-container">
+    <div class="filter-tabs">
+      <button 
+        class="filter-tab" 
+        [class.active]="activeFilter === 'all'"
+        (click)="setFilter('all')">
+        All Challenges
+      </button>
+      <button 
+        class="filter-tab" 
+        [class.active]="activeFilter === 'beginner'"
+        (click)="setFilter('beginner')">
+        Beginner
+      </button>
+      <button 
+        class="filter-tab" 
+        [class.active]="activeFilter === 'intermediate'"
+        (click)="setFilter('intermediate')">
+        Intermediate
+      </button>
+      <button 
+        class="filter-tab" 
+        [class.active]="activeFilter === 'advanced'"
+        (click)="setFilter('advanced')">
+        Advanced
+      </button>
+    </div>
+    <div class="search-box">
+      <i class="bi bi-search"></i>
+      <input 
+        type="text" 
+        placeholder="Search challenges..." 
+        [(ngModel)]="searchQuery"
+        class="search-input">
+    </div>
+  </div>
+</section>
+
+<!-- Main Content -->
+<section class="challenges-main-content">
+  <div class="content-container">
+    
+    <div *ngIf="loading" class="loading-state">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
 
-    <div *ngIf="error" class="alert alert-warning" role="alert">
-      {{ error }}
+    <div *ngIf="error" class="error-state">
+      <div class="alert alert-warning" role="alert">
+        {{ error }}
+      </div>
     </div>
 
-    <div *ngIf="!loading && !error && challenges.length === 0" class="text-center py-5">
-      <p class="text-muted">No challenges available at the moment. Check back soon!</p>
-    </div>
-
-    <div *ngIf="!loading && !error && challenges.length > 0" class="row g-4">
-      <div class="col-md-6 col-lg-4" *ngFor="let challenge of challenges; let i = index">
-        <div class="challenge-card challenge-gradient-card fade-in" [style.animation-delay]="(i * 0.1) + 's'" (click)="openChallengeDetail(challenge)">
-          <div class="d-flex justify-content-between align-items-start mb-3">
-            <span class="level-badge" [ngClass]="getLevelClass(challenge.niveau)">
-              {{ getLevelLabel(challenge.niveau) }}
-            </span>
-            <span class="duration-badge">
-              <i class="fas fa-clock me-1"></i>
-              {{ challenge.duree }} days
-            </span>
+    <div *ngIf="!loading && !error">
+      
+      <!-- Featured Challenge -->
+      <div class="section-header" *ngIf="featuredChallenge">
+        <h2 class="section-title">Featured Challenge</h2>
+      </div>
+      
+      <div class="featured-challenge-card" *ngIf="featuredChallenge" (click)="viewChallenge(featuredChallenge)">
+        <div class="featured-image">
+          <div class="featured-badge">
+            <i class="bi bi-star-fill"></i>
+            MOST POPULAR
           </div>
-          <h5 class="fw-bold mb-3">{{ challenge.titre }}</h5>
-          <p class="text-muted mb-3">{{ challenge.description }}</p>
-          <button class="challenge-btn btn-sm w-100">
-            View Details
+        </div>
+        <div class="featured-content">
+          <h3 class="featured-title">{{ featuredChallenge.titre }}</h3>
+          <p class="featured-description">{{ featuredChallenge.description }}</p>
+          <ul class="featured-benefits" *ngIf="featuredChallenge.benefits">
+            <li *ngFor="let benefit of featuredChallenge.benefits">
+              <i class="bi bi-check-circle-fill"></i>
+              {{ benefit }}
+            </li>
+          </ul>
+          <button class="btn-featured-join">
+            <i class="bi bi-person-plus me-2"></i>
+            Join Challenge
           </button>
         </div>
       </div>
+
+      <!-- Beginner Challenges -->
+      <div class="section-header" *ngIf="beginnerChallenges.length > 0">
+        <h2 class="section-title">Beginner Challenges</h2>
+        <a href="#" class="view-all-link">View All <i class="bi bi-arrow-right"></i></a>
+      </div>
+      
+      <div class="challenges-grid" *ngIf="beginnerChallenges.length > 0">
+        <div 
+          class="challenge-card" 
+          *ngFor="let challenge of beginnerChallenges.slice(0, 3)"
+          (click)="viewChallenge(challenge)">
+          <div class="challenge-icon">
+            <i class="bi bi-phone"></i>
+          </div>
+          <span class="challenge-badge" [ngClass]="getDifficultyBadgeClass(challenge)">
+            {{ getDifficultyLabel(challenge) }}
+          </span>
+          <h4 class="challenge-card-title">{{ challenge.titre }}</h4>
+          <p class="challenge-card-description">{{ challenge.description }}</p>
+          <div class="challenge-stats">
+            <div class="stat-row">
+              <span class="stat-label">Success Rate</span>
+              <span class="stat-value">{{ challenge.successRate }}%</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Avg. Time Saved</span>
+              <span class="stat-value">{{ challenge.avgTimeSaved || '2.5hrs' }}</span>
+            </div>
+          </div>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar" [style.width.%]="getProgressPercentage(challenge)"></div>
+          </div>
+          <button class="btn-challenge-start">
+            <i class="bi bi-play-fill me-2"></i>
+            Start Challenge
+          </button>
+        </div>
+      </div>
+
+      <!-- Intermediate Challenges -->
+      <div class="section-header" *ngIf="intermediateChallenges.length > 0">
+        <h2 class="section-title">Intermediate Challenges</h2>
+        <a href="#" class="view-all-link">View All <i class="bi bi-arrow-right"></i></a>
+      </div>
+      
+      <div class="challenges-grid" *ngIf="intermediateChallenges.length > 0">
+        <div 
+          class="challenge-card" 
+          *ngFor="let challenge of intermediateChallenges.slice(0, 3)"
+          (click)="viewChallenge(challenge)">
+          <div class="challenge-icon">
+            <i class="bi bi-square"></i>
+          </div>
+          <span class="challenge-badge" [ngClass]="getDifficultyBadgeClass(challenge)">
+            {{ getDifficultyLabel(challenge) }}
+          </span>
+          <h4 class="challenge-card-title">{{ challenge.titre }}</h4>
+          <p class="challenge-card-description">{{ challenge.description }}</p>
+          <div class="challenge-stats">
+            <div class="stat-row">
+              <span class="stat-label">Success Rate</span>
+              <span class="stat-value">{{ challenge.successRate }}%</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Avg. Time Saved</span>
+              <span class="stat-value">{{ challenge.avgTimeSaved || '3.8hrs' }}</span>
+            </div>
+          </div>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar" [style.width.%]="getProgressPercentage(challenge)"></div>
+          </div>
+          <button class="btn-challenge-start">
+            <i class="bi bi-play-fill me-2"></i>
+            Start Challenge
+          </button>
+        </div>
+      </div>
+
+      <!-- Advanced Challenges -->
+      <div class="section-header" *ngIf="advancedChallenges.length > 0">
+        <h2 class="section-title">Advanced Challenges</h2>
+        <a href="#" class="view-all-link">View All <i class="bi bi-arrow-right"></i></a>
+      </div>
+      
+      <div class="challenges-grid" *ngIf="advancedChallenges.length > 0">
+        <div 
+          class="challenge-card" 
+          *ngFor="let challenge of advancedChallenges.slice(0, 3)"
+          (click)="viewChallenge(challenge)">
+          <div class="challenge-icon">
+            <i class="bi bi-lightning-charge"></i>
+          </div>
+          <span class="challenge-badge" [ngClass]="getDifficultyBadgeClass(challenge)">
+            {{ getDifficultyLabel(challenge) }}
+          </span>
+          <h4 class="challenge-card-title">{{ challenge.titre }}</h4>
+          <p class="challenge-card-description">{{ challenge.description }}</p>
+          <div class="challenge-stats">
+            <div class="stat-row">
+              <span class="stat-label">Success Rate</span>
+              <span class="stat-value">{{ challenge.successRate }}%</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Avg. Time Saved</span>
+              <span class="stat-value">{{ challenge.avgTimeSaved || '5.2hrs' }}</span>
+            </div>
+          </div>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar" [style.width.%]="getProgressPercentage(challenge)"></div>
+          </div>
+          <button class="btn-challenge-start">
+            <i class="bi bi-play-fill me-2"></i>
+            Start Challenge
+          </button>
+        </div>
+      </div>
+
     </div>
+
   </div>
 </section>
-
-<!-- Challenge Detail Modal -->
-<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()" *ngIf="selectedChallenge">
-    <div class="modal-header">
-      <h3 class="modal-title">{{ selectedChallenge.titre }}</h3>
-      <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
-    </div>
-    <div class="modal-body">
-      <div class="mb-4">
-        <div class="d-flex gap-3 mb-3">
-          <span class="level-badge" [ngClass]="getLevelClass(selectedChallenge.niveau)">
-            {{ getLevelLabel(selectedChallenge.niveau) }} Level
-          </span>
-          <span class="duration-badge">
-            <i class="fas fa-clock me-1"></i>
-            {{ selectedChallenge.duree }} days
-          </span>
-        </div>
-        <p class="lead">{{ selectedChallenge.description }}</p>
-      </div>
-      <div class="challenge-info">
-        <h6 class="fw-bold mb-3">What to expect:</h6>
-        <ul class="list-unstyled">
-          <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Daily progress tracking</li>
-          <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Community support</li>
-          <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Tips and resources</li>
-          <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Rewards upon completion</li>
-        </ul>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
-      <button type="button" class="btn btn-primary challenge-join-btn" (click)="joinChallenge()">
-        <i class="fas fa-plus me-2"></i>
-        Join Challenge
-      </button>
-    </div>
-  </div>
-</div>
 
 <app-user-footer></app-user-footer>

@@ -9,6 +9,7 @@ import { TipsComponent } from './pages/tips/tips.component';
 import { ResourcesComponent } from './pages/resources/resources.component';
 import { ChallengesComponent } from './pages/challenges/challenges.component';
 import { AdminsComponent } from './pages/admins/admins.component';
+import { SettingsComponent } from './pages/settings/settings.component';
 
 const routes: Routes = [
   {
@@ -54,6 +55,11 @@ const routes: Routes = [
   {
     path: 'admins',
     component: AdminsComponent,
+    canActivate: [AdminGuard]
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent,
     canActivate: [AdminGuard]
   }
 ];

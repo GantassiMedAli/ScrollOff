@@ -1,0 +1,60 @@
+<app-user-navbar></app-user-navbar>
+
+<section class="challenge-preview-hero">
+  <div class="hero-container">
+    <h1 class="hero-title">Join Our Challenges</h1>
+    <p class="hero-subtitle">Take on challenges designed to build better digital habits</p>
+  </div>
+</section>
+
+<section class="challenge-preview-content">
+  <div class="content-container">
+    
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <div *ngIf="error" class="error-state">
+      <div class="alert alert-warning" role="alert">
+        {{ error }}
+      </div>
+    </div>
+
+    <div *ngIf="!loading && !error && featuredChallenges.length > 0" class="challenges-grid">
+      <div 
+        class="challenge-preview-card" 
+        *ngFor="let challenge of featuredChallenges"
+        (click)="viewChallenge(challenge)">
+        <span class="challenge-badge" [ngClass]="getDifficultyBadgeClass(challenge)">
+          {{ getDifficultyLabel(challenge) }}
+        </span>
+        <h3 class="challenge-title">{{ challenge.titre }}</h3>
+        <p class="challenge-description">{{ challenge.description }}</p>
+        <div class="challenge-meta">
+          <span class="meta-item">
+            <i class="bi bi-people"></i>
+            {{ challenge.participants | number }} participants
+          </span>
+          <span class="meta-item">
+            <i class="bi bi-calendar"></i>
+            {{ challenge.duree }} days
+          </span>
+        </div>
+        <button class="btn-view-challenge">
+          View Challenge
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && !error" class="view-all-section">
+      <button class="btn-view-all" (click)="viewAllChallenges()">
+        View All Challenges
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<app-user-footer></app-user-footer>

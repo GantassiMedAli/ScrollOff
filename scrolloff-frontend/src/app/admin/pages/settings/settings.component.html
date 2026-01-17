@@ -1,0 +1,146 @@
+<app-navbar></app-navbar>
+
+<div class="settings-page">
+  <!-- Left Sidebar -->
+  <aside class="settings-sidebar">
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">Settings</h2>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-back" (click)="goToDashboard()">
+        <i class="fas fa-arrow-left"></i>
+        <span>← Back to Dashboard</span>
+      </a>
+
+      <a class="nav-item" (click)="scrollToSection('account')">
+        <i class="fas fa-user"></i>
+        <span>Account</span>
+      </a>
+
+      <a class="nav-item" (click)="scrollToSection('security')">
+        <i class="fas fa-shield-alt"></i>
+        <span>Security</span>
+      </a>
+
+      <a class="nav-item" (click)="scrollToSection('notifications')">
+        <i class="fas fa-bell"></i>
+        <span>Notifications</span>
+      </a>
+
+      <a class="nav-item" (click)="scrollToSection('preferences')">
+        <i class="fas fa-cog"></i>
+        <span>System Preferences</span>
+      </a>
+
+      <a class="nav-item" (click)="scrollToSection('data')">
+        <i class="fas fa-database"></i>
+        <span>Data & System</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Right Content Area -->
+  <main class="settings-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">Admin Settings</h1>
+      <p class="page-subtitle">
+        Manage your admin account and system preferences
+      </p>
+    </div>
+
+    <!-- ================= ACCOUNT ================= -->
+    <section id="account" class="settings-card">
+      <div class="card-header">
+        <h3 class="card-title">Account Settings</h3>
+        <p class="card-subtitle">Manage your account information</p>
+      </div>
+
+      <div class="card-body">
+        <form [formGroup]="accountForm" (ngSubmit)="onUpdateAccount()" class="settings-form">
+          <div class="form-group">
+            <label class="form-label">Admin Name</label>
+            <input class="form-input" formControlName="name" readonly />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" type="email" formControlName="email" />
+          </div>
+
+          <button type="submit" class="btn-save" [disabled]="accountForm.invalid">
+            Update Account
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= SECURITY ================= -->
+    <section id="security" class="settings-card">
+      <div class="card-header">
+        <h3 class="card-title">Security</h3>
+        <p class="card-subtitle">Update your password</p>
+      </div>
+
+      <div class="card-body">
+        <form [formGroup]="passwordForm" (ngSubmit)="onUpdatePassword()" class="settings-form">
+          <input class="form-input" type="password" placeholder="Current Password" formControlName="currentPassword" />
+          <input class="form-input" type="password" placeholder="New Password" formControlName="newPassword" />
+          <input class="form-input" type="password" placeholder="Confirm Password" formControlName="confirmPassword" />
+
+          <button class="btn-save" type="submit" [disabled]="passwordForm.invalid">
+            Update Password
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= NOTIFICATIONS ================= -->
+    <section id="notifications" class="settings-card">
+      <div class="card-header">
+        <h3 class="card-title">Notifications</h3>
+      </div>
+
+      <div class="card-body">
+        <div class="preference-item">
+          <span>Email Notifications</span>
+          <input type="checkbox" [(ngModel)]="emailNotifications" />
+        </div>
+
+        <div class="preference-item">
+          <span>System Alerts</span>
+          <input type="checkbox" [(ngModel)]="systemAlerts" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PREFERENCES ================= -->
+    <section id="preferences" class="settings-card">
+      <div class="card-header">
+        <h3 class="card-title">System Preferences</h3>
+      </div>
+
+      <div class="card-body">
+        <div class="preference-item">
+          <span>Maintenance Mode</span>
+          <input type="checkbox" [(ngModel)]="maintenanceMode" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DATA ================= -->
+    <section id="data" class="settings-card">
+      <div class="card-header">
+        <h3 class="card-title">Data & System</h3>
+      </div>
+
+      <div class="card-body">
+        <button class="btn-export" (click)="onClearCache()">Clear Cache</button>
+        <button class="btn-export" (click)="onRefreshDashboardData()">Refresh Data</button>
+      </div>
+    </section>
+
+  </main>
+</div>

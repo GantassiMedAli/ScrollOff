@@ -1,0 +1,155 @@
+<app-user-navbar></app-user-navbar>
+
+<div *ngIf="loading" class="loading-container">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<div *ngIf="error" class="error-container">
+  <div class="alert alert-warning" role="alert">
+    {{ error }}
+  </div>
+  <button class="btn btn-primary" (click)="viewAllChallenges()">Back to Challenges</button>
+</div>
+
+<div *ngIf="!loading && !error && challenge" class="challenge-detail-page">
+  
+  <!-- Hero Section -->
+  <section class="challenge-hero">
+    <div class="hero-content">
+      <div class="hero-label">{{ challenge.duree }}-DAY CHALLENGE</div>
+      <h1 class="hero-title">{{ challenge.titre }}</h1>
+      <p class="hero-description">{{ challenge.description }}</p>
+      
+      <div class="hero-metrics">
+        <div class="metric-item">
+          <i class="bi bi-people"></i>
+          <span>{{ challenge.participants | number }} Participants</span>
+        </div>
+        <div class="metric-item">
+          <i class="bi bi-calendar"></i>
+          <span>{{ challenge.duree }} Days</span>
+        </div>
+        <div class="metric-item">
+          <i class="bi bi-graph-up"></i>
+          <span>{{ challenge.successRate }}% Success Rate</span>
+        </div>
+      </div>
+      
+      <div class="hero-buttons">
+        <button class="btn-join-challenge" (click)="handleChallengeAction()">
+          <i class="bi bi-plus-circle me-2"></i>{{ getButtonText() }}
+        </button>
+        <button class="btn-view-all-challenges" (click)="viewAllChallenges()">
+          <i class="bi bi-grid me-2"></i>View All Challenges
+        </button>
+      </div>
+    </div>
+    <div class="hero-image">
+      <!-- Image would go here - using background for now -->
+      <div class="hero-image-placeholder"></div>
+    </div>
+  </section>
+
+  <!-- Main Content Area -->
+  <section class="challenge-content">
+    <div class="content-wrapper">
+      
+      <!-- Left Column -->
+      <div class="content-left">
+        
+        <!-- About This Challenge -->
+        <div class="content-card">
+          <h2 class="card-title">About This Challenge</h2>
+          <p class="card-text">{{ challenge.fullDescription || challenge.description }}</p>
+          <p class="card-text">
+            This challenge is designed to help you build healthier digital habits and improve your overall wellbeing. 
+            By committing to this {{ challenge.duree }}-day journey, you'll learn to reclaim your time and establish 
+            more meaningful connections with the world around you.
+          </p>
+        </div>
+
+        <!-- How It Works -->
+        <div class="content-card">
+          <h2 class="card-title">How It Works</h2>
+          <div class="steps-list" *ngIf="challenge.steps && challenge.steps.length > 0">
+            <div class="step-item" *ngFor="let step of challenge.steps">
+              <div class="step-number">{{ step.number }}</div>
+              <div class="step-content">
+                <h3 class="step-title">{{ step.title }}</h3>
+                <p class="step-description">{{ step.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Participants -->
+        <div class="content-card">
+          <h2 class="card-title">Top Participants</h2>
+          <div class="participants-grid">
+            <div class="participant-card" *ngFor="let participant of topParticipants">
+              <div class="participant-avatar">{{ getInitials(participant.name) }}</div>
+              <div class="participant-info">
+                <div class="participant-name">{{ participant.name }}</div>
+                <div class="participant-progress">{{ participant.daysCompleted }}/{{ participant.totalDays }} days</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column -->
+      <div class="content-right">
+        
+        <!-- Your Progress -->
+        <div class="content-card">
+          <h2 class="card-title">Your Progress</h2>
+          <div class="progress-circle-wrapper">
+            <div class="progress-circle" [style.--progress]="progressPercentage">
+              <div class="progress-inner">
+                <div class="progress-value">{{ daysCompleted }}/{{ totalDays }}</div>
+                <div class="progress-label">Days Completed</div>
+              </div>
+            </div>
+          </div>
+          <div class="progress-status">
+            <span class="status-badge" [ngClass]="challenge.status">{{ getStatusText() }}</span>
+          </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="content-card">
+          <h2 class="card-title">Leaderboard</h2>
+          <div class="leaderboard-list">
+            <div class="leaderboard-item" *ngFor="let entry of leaderboard">
+              <div class="leaderboard-rank">{{ entry.rank }}</div>
+              <div class="leaderboard-avatar">{{ getInitials(entry.name) }}</div>
+              <div class="leaderboard-info">
+                <div class="leaderboard-name">{{ entry.name }}</div>
+                <div class="leaderboard-score">{{ entry.score }} points</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Complete & Earn -->
+        <div class="content-card card-reward">
+          <div class="reward-icon">
+            <i class="bi bi-trophy"></i>
+          </div>
+          <h2 class="card-title">Complete & Earn</h2>
+          <p class="card-text">
+            Finish all {{ challenge.duree }} days to unlock the {{ challenge.titre }} badge and earn 100 points!
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<app-user-footer></app-user-footer>

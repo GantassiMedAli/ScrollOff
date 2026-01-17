@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ChallengeService } from '../../../core/services';
 import { Challenge } from '../../../shared/models';
 
@@ -10,12 +11,23 @@ import { Challenge } from '../../../shared/models';
 })
 export class UserChallengesComponent implements OnInit {
   challenges: Challenge[] = [];
-  selectedChallenge: Challenge | null = null;
   loading = false;
   error: string | null = null;
-  showModal = false;
+  
+  // Filter state
+  activeFilter: 'all' | 'beginner' | 'intermediate' | 'advanced' = 'all';
+  searchQuery: string = '';
 
-  constructor(private challengeService: ChallengeService) { }
+  // Categorized challenges
+  featuredChallenge: Challenge | null = null;
+  beginnerChallenges: Challenge[] = [];
+  intermediateChallenges: Challenge[] = [];
+  advancedChallenges: Challenge[] = [];
+
+  constructor(
+    private challengeService: ChallengeService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadChallenges();
@@ -24,9 +36,11 @@ export class UserChallengesComponent implements OnInit {
   loadChallenges(): void {
     this.loading = true;
     this.error = null;
+    
     this.challengeService.getChallenges().subscribe({
       next: (data) => {
         this.challenges = data || [];
+        this.categorizeChallenges();
         this.loading = false;
       },
       error: (error) => {
@@ -38,34 +52,82 @@ export class UserChallengesComponent implements OnInit {
     });
   }
 
-  openChallengeDetail(challenge: Challenge): void {
-    this.selectedChallenge = challenge;
-    this.showModal = true;
-    // Prevent body scroll when modal is open
-    document.body.style.overflow = 'hidden';
+  categorizeChallenges(): void {
+    // Find featured challenge (first one or marked as featured)
+    this.featuredChallenge = this.challenges.find(c => c.featured) || this.challenges[0] || null;
+
+    // Categorize by difficulty
+    this.beginnerChallenges = this.challenges.filter(c => {
+      const level = c.niveau?.toLowerCase() || '';
+      return level === 'low' || level === 'easy' || level === 'beginner';
+    });
+
+    this.intermediateChallenges = this.challenges.filter(c => {
+      const level = c.niveau?.toLowerCase() || '';
+      return level === 'medium' || level === 'intermediate';
+    });
+
+    this.advancedChallenges = this.challenges.filter(c => {
+      const level = c.niveau?.toLowerCase() || '';
+      return level === 'high' || level === 'hard' || level === 'advanced';
+    });
   }
 
-  closeModal(): void {
-    this.showModal = false;
-    this.selectedChallenge = null;
-    document.body.style.overflow = '';
+  setFilter(filter: 'all' | 'beginner' | 'intermediate' | 'advanced'): void {
+    this.activeFilter = filter;
   }
 
-  joinChallenge(): void {
-    // Placeholder for join challenge functionality
-    alert('Challenge join functionality will be implemented soon!');
-    this.closeModal();
+  getFilteredChallenges(): Challenge[] {
+    let filtered = [...this.challenges];
+
+    // Apply filter
+    if (this.activeFilter !== 'all') {
+      filtered = filtered.filter(c => {
+        const level = c.niveau?.toLowerCase() || '';
+        if (this.activeFilter === 'beginner') {
+          return level === 'low' || level === 'easy' || level === 'beginner';
+        }
+        if (this.activeFilter === 'intermediate') {
+          return level === 'medium' || level === 'intermediate';
+        }
+        if (this.activeFilter === 'advanced') {
+          return level === 'high' || level === 'hard' || level === 'advanced';
+        }
+        return true;
+      });
+    }
+
+    // Apply search
+    if (this.searchQuery) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(c => 
+        c.titre.toLowerCase().includes(query) || 
+        c.description.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
   }
 
-  getLevelClass(niveau: string): string {
-    const level = niveau?.toLowerCase() || '';
-    if (level === 'high') return 'level-high';
-    if (level === 'medium') return 'level-medium';
-    return 'level-low';
+  viewChallenge(challenge: Challenge): void {
+    this.router.navigate(['/user/challenges', challenge.id]);
   }
 
-  getLevelLabel(niveau: string): string {
-    const level = niveau?.toLowerCase() || '';
-    return level.charAt(0).toUpperCase() + level.slice(1);
+  getDifficultyBadgeClass(challenge: Challenge): string {
+    const level = challenge.niveau?.toLowerCase() || '';
+    if (level === 'high' || level === 'hard') return 'badge-advanced';
+    if (level === 'medium') return 'badge-intermediate';
+    return 'badge-beginner';
+  }
+
+  getDifficultyLabel(challenge: Challenge): string {
+    const level = challenge.niveau?.toLowerCase() || '';
+    if (level === 'high' || level === 'hard') return 'HARD';
+    if (level === 'medium') return 'MEDIUM';
+    return 'EASY';
+  }
+
+  getProgressPercentage(challenge: Challenge): number {
+    return challenge.progress || 0;
   }
 }

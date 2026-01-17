@@ -4,6 +4,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { TestComponent } from './pages/test/test.component';
 import { UserStoriesComponent } from './pages/stories/stories.component';
 import { UserChallengesComponent } from './pages/challenges/challenges.component';
+import { ChallengePreviewComponent } from './pages/challenge-preview/challenge-preview.component';
+import { ChallengeDetailComponent } from './pages/challenge-detail/challenge-detail.component';
 import { AboutComponent } from './pages/about/about';
 import { QuizComponent } from './pages/quiz/quiz.component';
 import { TipsComponent } from './pages/tips/tips.component';
@@ -34,8 +36,16 @@ const routes: Routes = [
     component: UserStoriesComponent
   },
   {
+    path: 'challenge',
+    component: ChallengeDetailComponent
+  },
+  {
     path: 'challenges',
     component: UserChallengesComponent
+  },
+  {
+    path: 'challenges/:id',
+    component: ChallengeDetailComponent
   },
   {
     path: 'about',
